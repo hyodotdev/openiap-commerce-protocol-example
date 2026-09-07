@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Commerce Protocol Example · Purchase to access</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+        background: #101512;
+        color: #eef4ee;
+      }
+      main {
+        max-width: 1260px;
+        margin: auto;
+        padding: 24px;
+      }
+      header,
+      .heading,
+      .toolbar {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      header {
+        border-bottom: 1px solid #334138;
+        padding-bottom: 22px;
+      }
+      .brand {
+        font-size: 21px;
+        font-weight: 750;
+        letter-spacing: -0.6px;
+      }
+      .badge,
+      .eyebrow {
+        color: #b4d7b6;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .badge {
+        border: 1px solid #4b6551;
+        border-radius: 30px;
+        padding: 7px 12px;
+      }
+      h1 {
+        font-size: clamp(24px, 3vw, 36px);
+        letter-spacing: -0.035em;
+        margin: 5px 0 8px;
+        line-height: 1.2;
+      }
+      h2 {
+        font-size: 15px;
+        margin: 0 0 16px;
+      }
+      p {
+        color: #b0bdb2;
+        margin: 0;
+      }
+      .heading {
+        padding: 8px 0;
+        align-items: start;
+      }
+      button {
+        background: #c6ecac;
+        border: 0;
+        color: #132015;
+        font: inherit;
+        font-weight: 700;
+        padding: 12px 19px;
+        border-radius: 8px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      button:focus-visible {
+        outline: 3px solid white;
+        outline-offset: 4px;
+      }
+      #responses details + details { border-top: 1px solid #334138; margin-top: 12px; padding-top: 12px; }
+      summary { cursor: pointer; padding: 8px 0; font-weight: 600; }
+      ol {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        padding: 0;
+        margin: 0 0 24px;
+        list-style: none;
+      }
+      li {
+        border-top: 3px solid #334138;
+        padding-top: 10px;
+        font-size: 12px;
+        color: #9aa89d;
+      }
+      li.current {
+        color: #d2f9b9;
+        border-color: #c6ecac;
+      }
+      li.complete {
+        border-color: #648b54;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+      .metric,
+      section {
+        background: #1a231d;
+        border: 1px solid #334138;
+        border-radius: 12px;
+        padding: 16px;
+        min-width: 0;
+      }
+      .metric span {
+        display: block;
+        color: #a9b9ad;
+        font-size: 12px;
+      }
+      .metric strong {
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 12px;
+      }
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 12px;
+      }
+      td,
+      th {
+        text-align: left;
+        padding: 9px 6px;
+        border-bottom: 1px solid #334138;
+        overflow-wrap: anywhere;
+      }
+      th {
+        color: #a9b9ad;
+        font-weight: 500;
+      }
+      .empty {
+        padding: 8px 0;
+        font-size: 13px;
+        color: #94a398;
+      }
+      .check {
+        color: #c6ecac;
+        margin: 4px 0;
+        font-size: 13px;
+      }
+      pre {
+        margin: 0;
+        font:
+          12px/1.5 ui-monospace,
+          monospace;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-height: 330px;
+        overflow-y: auto;
+        color: #d2ddd4;
+      }
+      .built {
+        color: #aebeb0;
+        font-size: 12px;
+        margin-top: 12px;
+      }
+      footer {
+        color: #98a79c;
+        font-size: 12px;
+        margin: 20px 0 0;
+      }
+      #error {
+        color: #ffb09b;
+      }
+      @media (max-width: 700px) {
+        main {
+          padding: 18px;
+        }
+        .heading {
+          flex-direction: column;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .metrics {
+          grid-template-columns: 1fr 1fr;
+        }
+        #responses details + details { border-top: 1px solid #334138; margin-top: 12px; padding-top: 12px; }
+      summary { cursor: pointer; padding: 8px 0; font-weight: 600; }
+      ol {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        header {
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="brand">◈ Commerce Protocol Example</div>
+        <span class="badge">Local fixture · real HTTP + SQLite</span>
+      </header>
+      <div class="heading">
+        <div>
+          <span class="eyebrow" id="progress">Ready to run</span>
+          <h1 id="title">From a purchase to current access.</h1>
+          <p id="summary">
+            Run the six milestones against a new, empty database.
+          </p>
+          <div class="built" id="built"></div>
+        </div>
+        <button id="next">Run step 1 →</button>
+      </div>
+      <ol id="steps" aria-label="Implementation milestones"></ol>
+      <div class="metrics">
+        <div class="metric">
+          <span>Saved purchases</span><strong id="purchases">0</strong>
+        </div>
+        <div class="metric">
+          <span>Alice's access</span><strong id="access">No access</strong>
+        </div>
+        <div class="metric">
+          <span>Receiver inbox</span><strong id="inbox">0</strong>
+        </div>
+        <div class="metric">
+          <span>Passing checks</span><strong id="checks">0</strong>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="stack">
+          <section>
+            <h2>Purchase storage</h2>
+            <div id="purchase-table" class="empty">
+              No purchase has been verified.
+            </div>
+          </section>
+          <section>
+            <h2>Event deliveries</h2>
+            <div id="delivery-table" class="empty">
+              No lifecycle event has occurred.
+            </div>
+          </section>
+          <section>
+            <h2>This step proves</h2>
+            <div id="proofs" class="empty">
+              Each step runs assertions before it is marked complete.
+            </div>
+          </section>
+        </div>
+        <section>
+          <h2>Actual request results</h2>
+          <div id="responses">Waiting for the first HTTP request…</div>
+        </section>
+      </div>
+      <p id="error" role="alert"></p>
+      <footer id="scope">
+        Incrementally built educational example. The store and clock are fixtures; API
+        requests, SQLite writes, signatures and receiver requests execute
+        locally. This is not the IAPKit product or a production-conformance
+        claim.
+      </footer>
+    </main>
+    <script type="module">
+      const $ = (id) => document.getElementById(id);
+      let state = await (await fetch("/demo/state")).json();
+      function table(target, columns, rows) {
+        $(target).replaceChildren();
+        if (!rows.length) {
+          $(target).textContent = "No records yet.";
+          return;
+        }
+        const table = document.createElement("table");
+        const head = table.createTHead().insertRow();
+        for (const [label] of columns) {
+          const th = document.createElement("th");
+          th.textContent = label;
+          head.append(th);
+        }
+        const body = table.createTBody();
+        for (const row of rows) {
+          const tr = body.insertRow();
+          for (const [, key] of columns)
+            tr.insertCell().textContent = String(row[key] ?? "Unbound");
+        }
+        $(target).append(table);
+      }
+      function render() {
+        const current = state.history.at(-1);
+        const step = current?.step ?? 0;
+        $("steps").replaceChildren();
+        state.stages.forEach((item, index) => {
+          const li = document.createElement("li");
+          li.textContent = `0${index + 1} ${item.title}`;
+          li.className =
+            index + 1 === step ? "current" : index < step ? "complete" : "";
+          $("steps").append(li);
+        });
+        $("next").textContent =
+          step === state.stages.length
+            ? "All steps passed ✓"
+            : `Run step ${step + 1} →`;
+        $("next").disabled = step === state.stages.length;
+        if (!current) return;
+        $("progress").textContent =
+          `Milestone ${step} / ${state.stages.length} · ${current.simulatedTime.slice(0, 10)} simulated clock`;
+        $("title").textContent = current.title;
+        $("summary").textContent = current.result;
+        $("built").textContent = `Implemented: ${current.built}`;
+        $("purchases").textContent = current.purchases.length;
+        $("access").textContent = current.access.productIds.length
+          ? "Premium"
+          : "No access";
+        $("inbox").textContent = current.inboxCount;
+        $("checks").textContent = current.totalChecks;
+        table(
+          "purchase-table",
+          [
+            ["User", "userId"],
+            ["Product", "productId"],
+            ["State", "state"],
+            ["Renewal", "willRenew"],
+          ],
+          current.purchases,
+        );
+        table(
+          "delivery-table",
+          [
+            ["Event", "eventType"],
+            ["Attempts", "attempts"],
+            ["Status", "status"],
+          ],
+          current.deliveries,
+        );
+        $("proofs").replaceChildren();
+        for (const check of current.checks) {
+          const p = document.createElement("p");
+          p.className = "check";
+          p.textContent = `✓ ${check}`;
+          $("proofs").append(p);
+        }
+        $("responses").replaceChildren();
+        for (const [index, response] of current.responses.entries()) {
+          const detail = document.createElement("details");
+          detail.open = index === 0;
+          const summary = document.createElement("summary");
+          summary.textContent = `${response.operation}${response.httpStatus ? ` · HTTP ${response.httpStatus}` : ""}`;
+          const body = document.createElement("pre");
+          body.textContent = JSON.stringify(response.body, null, 2);
+          detail.append(summary, body);
+          $("responses").append(detail);
+        }
+      }
+      $("next").onclick = async () => {
+        $("next").disabled = true;
+        $("error").textContent = "";
+        try {
+          const response = await fetch("/demo/advance", { method: "POST" });
+          if (!response.ok)
+            throw new Error("Step failed; inspect the server output.");
+          await response.json();
+          state = await (await fetch("/demo/state")).json();
+          render();
+        } catch (error) {
+          $("error").textContent = error.message;
+          $("next").disabled = false;
+        }
+      };
+      render();
+    </script>
+  </body>
+</html>

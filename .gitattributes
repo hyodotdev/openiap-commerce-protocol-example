@@ -1,0 +1,2 @@
+# Recorded patch context lines must retain their single-space prefix.
+docs/build/**/changes.patch -whitespace

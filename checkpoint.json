@@ -1,0 +1,8 @@
+{
+  "step": 6,
+  "id": "06-recover-reviewed-5",
+  "title": "Expire access and restart",
+  "built": "Documented standalone setup, review evidence, and verified exports",
+  "result": "Access closes at the deadline. Restarting preserves purchases and deliveries.",
+  "previous": "06-recover-reviewed-4"
+}

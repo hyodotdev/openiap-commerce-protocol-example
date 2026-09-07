@@ -1,0 +1,29 @@
+{
+  "name": "openiap-commerce-protocol-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun server.mjs",
+    "test": "bun verify.mjs",
+    "capture": "bun capture.mjs",
+    "verify:checkpoints": "bun verify-checkpoints.mjs",
+    "test:tooling": "bun test checkpoint-tools.test.mjs",
+    "consumer": "bun consumer.mjs",
+    "demo:consumer": "bun consumer.mjs demo",
+    "demo:bridge": "bun client-bridge.mjs"
+  },
+  "dependencies": {
+    "openiap-commerce-protocol": "0.1.0",
+    "ajv": "^8.17.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  },
+  "description": "A runnable, documented Commerce Protocol backend with AI build checkpoints.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyodotdev/openiap-commerce-protocol-example.git"
+  }
+}
