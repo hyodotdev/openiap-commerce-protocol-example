@@ -105,7 +105,7 @@ export async function verifyLab({ compareSigner } = {}) {
       lab.runtime.provider.observe({
         id: "late-cancel",
         kind: "cancel",
-        occurredAt: FIXTURE.startsAt + 1000,
+        occurredAt: FIXTURE.expiresAt,
       }),
       false,
     );

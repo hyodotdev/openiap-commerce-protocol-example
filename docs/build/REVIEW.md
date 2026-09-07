@@ -131,3 +131,11 @@ macOS had added AppleDouble metadata files that Linux extracted as ordinary file
 `06-recover-reviewed-6` excludes that metadata when reading earlier archives and
 disables it for new captures. The regression test compares extracted source hashes
 with the original files. Historical archives and their source hashes are unchanged.
+
+## Final CLI review
+
+The cancellation-after-expiry check used a timestamp older than the expiry
+observation, so it exercised stale ordering instead of the expired-state guard.
+`06-recover-reviewed-7` uses the expiry timestamp and repeats the check. The
+provider behavior is unchanged. The CI export guard now checks committed
+evidence before archive verification regenerates its report.

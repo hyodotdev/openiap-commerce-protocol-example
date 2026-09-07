@@ -29,6 +29,6 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm test
       - run: npm run test:tooling
-      - run: npm run verify:checkpoints
       - name: Verify documentation matches the recorded source
         run: bun export-docs.mjs "$RUNNER_TEMP/commerce-docs"
+      - run: npm run verify:checkpoints

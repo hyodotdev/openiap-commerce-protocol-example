@@ -29,7 +29,8 @@ const selected = guide.map((step) => {
   return record;
 });
 const last = selected.at(-1);
-assert.equal(selected.length, 6);
+assert.deepEqual(selected.map((record) => record.step), [1, 2, 3, 4, 5, 6]);
+assert(guide.every((step) => typeof step.label === "string" && step.label.length > 0));
 assert.deepEqual(
   Object.fromEntries(
     SOURCE_FILES.sort().map((name) => [

@@ -51,3 +51,7 @@ Fix the first Linux CI failure without rewriting historical recordings. macOS
 AppleDouble metadata must not count as source. Exclude it on extraction, omit it
 from new archives, and add a portable extraction regression test. Capture the
 corrected tooling, verify every source revision, and rerun GitHub CI.
+
+Correct the final CLI review finding: exercise cancellation at the expiry
+observation timestamp so the check reaches the expired-state guard. Preserve
+the earlier capture, record this revision, and verify its archive and patch.
