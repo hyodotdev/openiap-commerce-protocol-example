@@ -7,7 +7,7 @@ import { requestOperation } from "./scenario.mjs";
 import { runConsumerDemo } from "./consumer.mjs";
 import { runBridgeDemo } from "./client-bridge.mjs";
 import { startLab } from "./server.mjs";
-import { authentic, deliver, sign } from "./webhooks.mjs";
+import { authentic, createReceiver, deliver, sign } from "./webhooks.mjs";
 
 export async function verifyLab({ compareSigner } = {}) {
   const lab = startLab();
@@ -133,6 +133,65 @@ export async function verifyLab({ compareSigner } = {}) {
       }),
     );
     check("Tampered HTTP body has no inbox effect", invalid.status, 401);
+    const byteReceiver = createReceiver(
+      ":memory:",
+      lab.runtime.secret,
+      () => lab.runtime.time,
+    );
+    try {
+      const event = { ...JSON.parse(body), userId: "demo_\uFFFD" };
+      const unicode = Buffer.from(JSON.stringify(event));
+      const offset = unicode.indexOf(Buffer.from("\uFFFD"));
+      const malformed = Buffer.concat([
+        unicode.subarray(0, offset),
+        Buffer.from([0xff]),
+        unicode.subarray(offset + 3),
+      ]);
+      const withBom = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), unicode]);
+      const send = (bytes, signedBytes = unicode) =>
+        byteReceiver.fetch(
+          new Request(`${lab.runtime.baseUrl}/demo/receiver`, {
+            method: "POST",
+            body: bytes,
+            headers: {
+              [WEBHOOK.timestampHeader]: timestamp,
+              [WEBHOOK.signatureHeader]: sign(
+                lab.runtime.secret,
+                timestamp,
+                signedBytes,
+              ),
+              [WEBHOOK.eventIdHeader]: event.eventId,
+            },
+          }),
+        );
+      for (const [label, bytes] of [
+        ["Changed UTF-8 bytes", malformed],
+        ["Inserted UTF-8 BOM", withBom],
+      ]) {
+        check(
+          `${label} cannot reuse a signature`,
+          [(await send(bytes)).status, byteReceiver.count()],
+          [401, 0],
+        );
+      }
+      check(
+        "Authenticated malformed UTF-8 is rejected before storage",
+        [(await send(malformed, malformed)).status, byteReceiver.count()],
+        [400, 0],
+      );
+      check(
+        "Authentic Unicode bytes are accepted and stored",
+        [(await send(unicode)).status, byteReceiver.count()],
+        [200, 1],
+      );
+      check(
+        "Authentic BOM bytes are verified before decoding",
+        [(await send(withBom, withBom)).status, byteReceiver.count()],
+        [200, 1],
+      );
+    } finally {
+      byteReceiver.close();
+    }
     check(
       "Receiver still has exactly four events",
       lab.runtime.receiver.count(),

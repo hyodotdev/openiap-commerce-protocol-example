@@ -1,8 +1,8 @@
 {
   "step": 6,
-  "id": "06-recover-reviewed-7",
+  "id": "06-recover-reviewed-8",
   "title": "Expire access and restart",
-  "built": "Verified cancellation at expiry and preserved review evidence",
+  "built": "Exact-byte webhook authentication with Unicode regression checks",
   "result": "Access closes at the deadline. Restarting preserves purchases and deliveries.",
-  "previous": "06-recover-reviewed-6"
+  "previous": "06-recover-reviewed-7"
 }

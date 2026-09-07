@@ -28,10 +28,10 @@ current access, delivery attempts, and expandable request/response details.
 No store account, API key, OpenIAP checkout, or IAPKit account is required.
 Modern Yarn uses the included `node_modules` linker.
 
-![The completed local backend: expired access, delivered events, and inspectable responses](https://raw.githubusercontent.com/hyodotdev/openiap-commerce-protocol-example/main/docs/build/06-recover-reviewed-7/screen.png)
+![The completed local backend: expired access, delivered events, and inspectable responses](https://raw.githubusercontent.com/hyodotdev/openiap-commerce-protocol-example/main/docs/build/06-recover-reviewed-8/screen.png)
 
 The screenshot comes from an executed source checkpoint. See its
-[run report](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/main/docs/build/06-recover-reviewed-7/run.json)
+[run report](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/main/docs/build/06-recover-reviewed-8/run.json)
 and the [complete build history](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/main/docs/build/README.md).
 
 ## What you will see

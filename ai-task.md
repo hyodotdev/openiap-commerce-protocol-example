@@ -55,3 +55,9 @@ corrected tooling, verify every source revision, and rerun GitHub CI.
 Correct the final CLI review finding: exercise cancellation at the expiry
 observation timestamp so the check reaches the expired-state guard. Preserve
 the earlier capture, record this revision, and verify its archive and patch.
+
+Apply the Codex review: authenticate webhook body bytes before UTF-8 decoding.
+Reject altered UTF-8 and inserted BOM bytes with an unchanged signature. Reject
+authentically signed malformed UTF-8 before storage, and accept correctly signed
+Unicode and BOM bodies. Keep the reproduced failure, preserve old checkpoints,
+then capture and verify the corrected revision.

@@ -6,7 +6,10 @@ import { validate } from "./contract.mjs";
 export function sign(secret, timestamp, body) {
   return (
     WEBHOOK.signaturePrefix +
-    createHmac("sha256", secret).update(`${timestamp}.${body}`).digest("hex")
+    createHmac("sha256", secret)
+      .update(`${timestamp}.`)
+      .update(body)
+      .digest("hex")
   );
 }
 
@@ -36,20 +39,21 @@ export function createReceiver(path, secret, now) {
   );
 
   async function fetch(request) {
-    const body = await request.text();
+    const bytes = new Uint8Array(await request.arrayBuffer());
     if (
       !authentic(
         [secret],
         request.headers.get(WEBHOOK.timestampHeader),
-        body,
+        bytes,
         request.headers.get(WEBHOOK.signatureHeader),
         Math.floor(now() / 1000),
       )
     ) {
       return new Response("Invalid signature", { status: 401 });
     }
-    let event;
+    let body, event;
     try {
+      body = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
       event = JSON.parse(body);
     } catch {
       return new Response("Invalid JSON", { status: 400 });
