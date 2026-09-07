@@ -59,7 +59,9 @@ try {
     );
   }
   writeFileSync(join(output, "changes.patch"), createPatch(previous, current));
-  run("tar", [
+  run("env", [
+    "COPYFILE_DISABLE=1",
+    "tar",
     "-czf",
     join(output, "source.tar.gz"),
     "-C",

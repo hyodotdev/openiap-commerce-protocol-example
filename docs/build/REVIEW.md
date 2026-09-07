@@ -122,3 +122,12 @@ recording tools, every historical archive, and the final documentation export.
 This revision records local documentation and reproducibility checks, without
 adding an external review result. Earlier source checkpoints and failures remain
 available.
+
+## Linux CI archive correction
+
+The [first GitHub run](https://github.com/hyodotdev/openiap-commerce-protocol-example/actions/runs/34142131934)
+passed runtime and tooling tests, then failed the first archive hash comparison.
+macOS had added AppleDouble metadata files that Linux extracted as ordinary files.
+`06-recover-reviewed-6` excludes that metadata when reading earlier archives and
+disables it for new captures. The regression test compares extracted source hashes
+with the original files. Historical archives and their source hashes are unchanged.

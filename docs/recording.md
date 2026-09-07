@@ -55,3 +55,7 @@ six featured milestones and extracts both AI briefs from the selected final
 archive, so the published instructions match the code they describe.
 
 [Back to the example](../README.md) · [Build history](build/README.md)
+
+Historical macOS archives include AppleDouble (`._*`) metadata. The verification
+tools exclude it from extraction; new captures omit it. Source files and hashes
+remain identical on macOS and Linux.

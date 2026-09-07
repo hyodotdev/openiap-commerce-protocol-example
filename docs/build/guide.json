@@ -32,7 +32,7 @@
   {
     "request": "Close access at expiry and review recovery and failure handling across the complete backend.",
     "change": "Completed expiry and recovery, then applied the external CLI review: atomic first-binding grant events, conflicting-expiry rejection, and source/patch verification.",
-    "review": "The reviewed final version adds the grant omitted by earlier checkpoints, so four events now reach the receiver. Tests cover binding/outbox rollback, expiry, ignored observations, delivery failures, and reopened SQLite storage. A second review added late-expiry and delayed-binding tests. This patch starts from the preceding reviewed revision. The final revision also checks the OpenIAP request boundary and a ready event receiver for businesses that supply only those roles. A third review verified proxy delivery and equal-time transitions. A publication review added standalone setup and recording guides, then repeated source and browser verification.",
-    "id": "06-recover-reviewed-5"
+    "review": "The reviewed final version adds the grant omitted by earlier checkpoints, so four events now reach the receiver. Tests cover binding/outbox rollback, expiry, ignored observations, delivery failures, and reopened SQLite storage. A second review added late-expiry and delayed-binding tests. This patch starts from the preceding reviewed revision. The final revision also checks the OpenIAP request boundary and a ready event receiver for businesses that supply only those roles. A third review verified proxy delivery and equal-time transitions. A publication review added standalone setup and recording guides, then repeated source and browser verification. The first Linux CI run exposed macOS metadata in historical archives; extraction now excludes it, new captures omit it, and a regression test verifies source hashes.",
+    "id": "06-recover-reviewed-6"
   }
 ]

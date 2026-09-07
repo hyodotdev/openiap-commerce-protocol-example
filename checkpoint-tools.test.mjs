@@ -5,10 +5,47 @@ import { tmpdir, homedir } from "node:os";
 import { join } from "node:path";
 import {
   createPatch,
+  extract,
+  hashes,
   nextAttempt,
+  run,
   sanitize,
   readRecords,
 } from "./checkpoint-tools.mjs";
+
+test("archive extraction excludes macOS metadata and preserves source hashes", () => {
+  const temp = mkdtempSync(join(tmpdir(), "commerce-capture-test-"));
+  try {
+    const source = join(temp, "source");
+    mkdirSync(source);
+    writeFileSync(join(source, "README.md"), "Source content\n");
+    const expected = hashes(source);
+    const metadata = Buffer.alloc(70);
+    metadata.writeUInt32BE(0x00051607, 0);
+    metadata.writeUInt32BE(0x00020000, 4);
+    metadata.writeUInt16BE(1, 24);
+    metadata.writeUInt32BE(9, 26);
+    metadata.writeUInt32BE(38, 30);
+    metadata.writeUInt32BE(32, 34);
+    writeFileSync(join(source, "._README.md"), metadata);
+    const archive = join(temp, "source.tar.gz");
+    run("env", [
+      "COPYFILE_DISABLE=1",
+      "tar",
+      "-czf",
+      archive,
+      "-C",
+      source,
+      "._README.md",
+      "README.md",
+    ]);
+    const target = join(temp, "extracted");
+    extract(archive, target);
+    assert.deepEqual(hashes(target), expected);
+  } finally {
+    rmSync(temp, { recursive: true, force: true });
+  }
+});
 
 test("patches preserve path-like source text across additions, changes, and deletions", () => {
   const temp = mkdtempSync(join(tmpdir(), "commerce-patch-test-"));

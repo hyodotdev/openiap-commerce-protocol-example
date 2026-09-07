@@ -85,7 +85,15 @@ export function run(command, args, cwd) {
 }
 export function extract(archive, target) {
   mkdirSync(target, { recursive: true });
-  run("tar", ["-xzf", archive, "-C", target]);
+  // Older macOS archives contain AppleDouble metadata, not source files.
+  run("tar", [
+    ...(process.platform === "darwin" ? ["--no-mac-metadata"] : []),
+    "--exclude=._*",
+    "-xzf",
+    archive,
+    "-C",
+    target,
+  ]);
 }
 export function normalizePatch(patch) {
   return patch

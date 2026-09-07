@@ -46,3 +46,8 @@ deployed. Preserve every earlier archive. Record this documentation revision,
 verify all source archives again, and export a stable current-source download.
 Add CI that tests runtime, tooling, archives and the documentation export. This
 revision is a local publication review, not another completed external review.
+
+Fix the first Linux CI failure without rewriting historical recordings. macOS
+AppleDouble metadata must not count as source. Exclude it on extraction, omit it
+from new archives, and add a portable extraction regression test. Capture the
+corrected tooling, verify every source revision, and rerun GitHub CI.

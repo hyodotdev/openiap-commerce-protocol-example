@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-09-07T16:03:48.892Z",
+  "recordedAt": "2026-09-07T16:16:13.477Z",
   "scope": "Each recorded archive extracted outside both repositories; patches applied in order from an empty directory; published dependencies installed with npm.",
   "results": [
     {
@@ -12,7 +12,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 361ms\n"
+          "output": "\nadded 10 packages in 327ms\n"
         },
         {
           "command": "npm test",
@@ -31,7 +31,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 279ms\n"
+          "output": "\nadded 10 packages in 220ms\n"
         },
         {
           "command": "npm test",
@@ -50,7 +50,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 227ms\n"
+          "output": "\nadded 10 packages in 252ms\n"
         },
         {
           "command": "npm test",
@@ -69,7 +69,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 233ms\n"
+          "output": "\nadded 10 packages in 232ms\n"
         },
         {
           "command": "npm test",
@@ -88,7 +88,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 227ms\n"
+          "output": "\nadded 10 packages in 225ms\n"
         },
         {
           "command": "npm test",
@@ -107,7 +107,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 228ms\n"
+          "output": "\nadded 10 packages in 225ms\n"
         },
         {
           "command": "npm test",
@@ -126,12 +126,12 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 241ms\n"
+          "output": "\nadded 10 packages in 234ms\n"
         },
         {
           "command": "npm test",
           "exitCode": 0,
-          "output": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun verify.mjs && node --test checkpoint-tools.test.mjs\n\nCommerce Lab: 90 checks passed. No store or production service contacted.\n✔ patches preserve path-like source text across additions, changes, and deletions (53.637167ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 92.402042\n"
+          "output": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun verify.mjs && node --test checkpoint-tools.test.mjs\n\nCommerce Lab: 90 checks passed. No store or production service contacted.\n✔ patches preserve path-like source text across additions, changes, and deletions (52.478167ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 89.317417\n"
         }
       ]
     },
@@ -145,7 +145,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 236ms\n"
+          "output": "\nadded 10 packages in 250ms\n"
         },
         {
           "command": "npm test",
@@ -155,7 +155,7 @@
         {
           "command": "npm run test:tooling",
           "exitCode": 0,
-          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) patches preserve path-like source text across additions, changes, and deletions [48.82ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.51ms]\n\n 2 pass\n 0 fail\nRan 2 tests across 1 file. [70.00ms]\n"
+          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) patches preserve path-like source text across additions, changes, and deletions [47.49ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.39ms]\n\n 2 pass\n 0 fail\nRan 2 tests across 1 file. [61.00ms]\n"
         }
       ]
     },
@@ -169,7 +169,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 250ms\n"
+          "output": "\nadded 10 packages in 245ms\n"
         },
         {
           "command": "npm test",
@@ -179,7 +179,7 @@
         {
           "command": "npm run test:tooling",
           "exitCode": 0,
-          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) patches preserve path-like source text across additions, changes, and deletions [48.78ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.45ms]\n\n 2 pass\n 0 fail\nRan 2 tests across 1 file. [63.00ms]\n"
+          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) patches preserve path-like source text across additions, changes, and deletions [46.86ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.52ms]\n\n 2 pass\n 0 fail\nRan 2 tests across 1 file. [60.00ms]\n"
         }
       ]
     },
@@ -193,7 +193,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 364ms\n"
+          "output": "\nadded 10 packages in 240ms\n"
         },
         {
           "command": "npm test",
@@ -203,7 +203,7 @@
         {
           "command": "npm run test:tooling",
           "exitCode": 0,
-          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) patches preserve path-like source text across additions, changes, and deletions [45.93ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.52ms]\n(pass) unfinished captures do not hide completed records [0.74ms]\n\n 3 pass\n 0 fail\nRan 3 tests across 1 file. [62.00ms]\n"
+          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) patches preserve path-like source text across additions, changes, and deletions [46.86ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.35ms]\n(pass) unfinished captures do not hide completed records [0.79ms]\n\n 3 pass\n 0 fail\nRan 3 tests across 1 file. [62.00ms]\n"
         }
       ]
     },
@@ -217,7 +217,7 @@
         {
           "command": "npm ci --ignore-scripts --no-audit --no-fund",
           "exitCode": 0,
-          "output": "\nadded 10 packages in 241ms\n"
+          "output": "\nadded 10 packages in 248ms\n"
         },
         {
           "command": "npm test",
@@ -227,7 +227,31 @@
         {
           "command": "npm run test:tooling",
           "exitCode": 0,
-          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) patches preserve path-like source text across additions, changes, and deletions [47.96ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.43ms]\n(pass) unfinished captures do not hide completed records [0.84ms]\n\n 3 pass\n 0 fail\nRan 3 tests across 1 file. [65.00ms]\n"
+          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) patches preserve path-like source text across additions, changes, and deletions [50.80ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.58ms]\n(pass) unfinished captures do not hide completed records [0.74ms]\n\n 3 pass\n 0 fail\nRan 3 tests across 1 file. [66.00ms]\n"
+        }
+      ]
+    },
+    {
+      "id": "06-recover-reviewed-6",
+      "archiveSha256": "21d588909482cba125ea6f3688ace78111ce852c526374289c52e286aff86b15",
+      "patchSha256": "25d08ad1c312f933db3228453744b5f1d965e4296e1a9f6a39e77458545eabad",
+      "sourceHashesMatch": true,
+      "patchAppliesExactly": true,
+      "commands": [
+        {
+          "command": "npm ci --ignore-scripts --no-audit --no-fund",
+          "exitCode": 0,
+          "output": "\nadded 10 packages in 243ms\n"
+        },
+        {
+          "command": "npm test",
+          "exitCode": 0,
+          "output": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun verify.mjs\n\nCommerce Protocol Example: 133 checks passed. No store or production service contacted.\n"
+        },
+        {
+          "command": "npm run test:tooling",
+          "exitCode": 0,
+          "output": "\n> openiap-commerce-protocol-example@0.0.0 test:tooling\n> bun test checkpoint-tools.test.mjs\n\nbun test v1.3.13 (bf2e2cec)\n\ncheckpoint-tools.test.mjs:\n(pass) archive extraction excludes macOS metadata and preserves source hashes [11.46ms]\n(pass) patches preserve path-like source text across additions, changes, and deletions [46.44ms]\n(pass) failed attempts get new numbers and private paths are redacted [0.64ms]\n(pass) unfinished captures do not hide completed records [0.79ms]\n\n 4 pass\n 0 fail\nRan 4 tests across 1 file. [73.00ms]\n"
         }
       ]
     }

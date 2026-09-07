@@ -1,8 +1,8 @@
 {
   "step": 6,
-  "id": "06-recover-reviewed-5",
+  "id": "06-recover-reviewed-6",
   "title": "Expire access and restart",
-  "built": "Documented standalone setup, review evidence, and verified exports",
+  "built": "Verified portable source archives on macOS and Linux",
   "result": "Access closes at the deadline. Restarting preserves purchases and deliveries.",
-  "previous": "06-recover-reviewed-4"
+  "previous": "06-recover-reviewed-5"
 }
