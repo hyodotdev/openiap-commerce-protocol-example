@@ -7,7 +7,7 @@ import { WEBHOOK, COMMERCE_EVENT_VERSION } from "openiap-commerce-protocol";
 import { createReceiver, sign } from "./webhooks.mjs";
 import { validate } from "./contract.mjs";
 
-// One configured emitter/project and signing key per receiver database.
+// One app inbox; named emitters can bind separate signing keys to project IDs.
 export function startConsumer({ secret, path, port = 0, now = Date.now }) {
   assert(secret, "Set COMMERCE_WEBHOOK_SECRET to the provider signing secret.");
   let receiver = createReceiver(path, secret, now);
@@ -27,6 +27,8 @@ export function startConsumer({ secret, path, port = 0, now = Date.now }) {
   return {
     url: `http://127.0.0.1:${server.port}/webhooks/commerce`,
     count: () => receiver.count(),
+    eraseUser: (userId) => receiver.eraseUser(userId),
+    inspect: () => receiver.inspect(),
     reopen() {
       receiver.close();
       receiver = createReceiver(path, secret, now);

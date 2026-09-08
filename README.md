@@ -1,8 +1,8 @@
 # OpenIAP Commerce Protocol example
 
-A runnable purchase-to-access backend, built and reviewed with AI in six
+A runnable purchase-to-access backend, built and reviewed with AI in seven
 milestones. Follow a purchase through verification, ownership, access, and
-signed event delivery. Inspect the actual HTTP responses and database changes.
+signed event delivery, and account deletion. Inspect the actual HTTP responses and database changes.
 
 The backend uses the published **`openiap-commerce-protocol`** package. HTTP,
 SQLite, and webhook signatures run locally; the store, users, and clock are
@@ -23,7 +23,7 @@ npm start
 ```
 
 Open **http://127.0.0.1:5181**, then click **Run step 1 →** and continue through
-step 6. Each step changes real local state. The dashboard shows purchases,
+step 7. Each step changes real local state. The dashboard shows purchases,
 current access, delivery attempts, and expandable request/response details.
 No store account, API key, OpenIAP checkout, or IAPKit account is required.
 Modern Yarn uses the included `node_modules` linker.
@@ -44,6 +44,7 @@ and the [complete build history](https://github.com/hyodotdev/openiap-commerce-p
 | 4. Cancel   | Turn off renewal; queue an event                 | Paid access remains until expiry                     |
 | 5. Deliver  | Sign events; retry a failed receiver             | A repeated delivery has one inbox effect             |
 | 6. Expire   | Advance the clock; reopen SQLite                 | Access closes; ownership and delivery records remain |
+| 7. Erase    | Remove provider identity and receiver copies    | Repeated deletion and late deliveries cannot restore the user |
 
 Restarting `npm start` creates a fresh temporary database, so you can replay the
 walkthrough. Step 6 reopens the existing databases **inside the running process**;
@@ -59,8 +60,10 @@ If port 5181 is occupied, run `COMMERCE_LAB_PORT=5183 npm start`.
 | Data / automation    | [Event receiver guide](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/main/docs/receiver.md) | A ready signed-event receiver with a durable inbox                   |
 | Integrated platform  | [Integration brief](INTEGRATE.md)                                                                                 | How the roles compose without splitting account authority            |
 
-`client-bridge.mjs` maps Apple/Google OpenIAP purchase fields into the installed
+`client-bridge.mjs` maps Apple, Google, Amazon, and Horizon OpenIAP purchase fields into the installed
 verification schema **on the app backend**. Run `npm run demo:bridge` to check it.
+`npm test` also exercises all four fixture shapes through verification, binding,
+access and erasure. Amazon/Horizon cases include negative rechecks and outages.
 It does not perform a mobile purchase or authenticate store evidence. The
 current client `verifyPurchaseWithProvider` helper uses IAPKit's own API; other
 providers connect through the app's authenticated backend.
@@ -109,9 +112,32 @@ and Google Chrome. The [recording guide](https://github.com/hyodotdev/openiap-co
 explains how to preserve a checkpoint and export evidence. GitHub CI runs the
 runtime, tooling, archive, and documentation-export checks.
 
+## Account deletion
+
+Step 7 runs `eraseUser` using server credentials. The provider removes identity
+from purchases and removes identity-bearing event records in one transaction.
+A repeated request returns the same completed job, including after restart.
+
+The app owns already-delivered copies: it erases its receiver inbox and retains
+a keyed deletion marker so late signed events are acknowledged without storing
+the deleted identity. The example also refuses rebinding erased evidence.
+This is a local ownership policy; the protocol does not cancel the store subscription.
+Database backups and the app’s own account records remain the operator’s responsibility.
+
+Run `bun verify-erasure.mjs` to exercise deletion while a delivery is in flight,
+late lifecycle events, repeated requests, and storage reopening.
+
+## Replace the example with IAPKit
+
+The OpenIAP checkout includes `packages/kit/scripts/docs/run-commerce-interop.mjs`.
+It starts IAPKit with an isolated local Convex deployment and keeps one app
+backend and receiver running while switching the commerce provider. See the
+[composition guide](https://openiap.dev/commerce-protocol/ecosystem#composition-proof)
+for the executed report, source, and command. No IAPKit account or store keys are needed.
+
 ## What remains for production
 
-Real store validation and sandbox purchases, login, user erasure, tenant
+Real store validation and sandbox purchases, login, tenant
 isolation, GraphQL, public HTTPS delivery protections, and operational recovery
 are not implemented here. The backend advertises **no complete profiles**.
 Schema checks and the local walkthrough do not establish profile conformance.

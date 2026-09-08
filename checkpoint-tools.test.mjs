@@ -108,3 +108,29 @@ test("unfinished captures do not hide completed records", () => {
     rmSync(temp, { recursive: true, force: true });
   }
 });
+
+test("checkpoint replay follows predecessors instead of directory name order", () => {
+  const temp = mkdtempSync(join(tmpdir(), "commerce-capture-test-"));
+  const records = [
+    { id: "07-reviewed", previous: "01-start" },
+    { id: "07-interoperable", previous: "07-reviewed" },
+    { id: "01-start" },
+  ];
+  try {
+    for (const record of records) {
+      mkdirSync(join(temp, record.id));
+      writeFileSync(join(temp, record.id, "run.json"), JSON.stringify(record));
+    }
+    assert.deepEqual(
+      readRecords(temp).map((record) => record.id),
+      ["01-start", "07-reviewed", "07-interoperable"],
+    );
+    writeFileSync(
+      join(temp, "01-start/run.json"),
+      JSON.stringify({ id: "01-start", previous: "07-interoperable" }),
+    );
+    assert.throws(() => readRecords(temp), /Checkpoint cycle/);
+  } finally {
+    rmSync(temp, { recursive: true, force: true });
+  }
+});

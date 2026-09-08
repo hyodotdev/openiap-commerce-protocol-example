@@ -1,8 +1,8 @@
 {
-  "step": 6,
-  "id": "06-recover-reviewed-8",
-  "title": "Expire access and restart",
-  "built": "Exact-byte webhook authentication with Unicode regression checks",
-  "result": "Access closes at the deadline. Restarting preserves purchases and deliveries.",
-  "previous": "06-recover-reviewed-7"
+  "step": 7,
+  "id": "07-account-erasure-interoperable-6",
+  "title": "Delete the account",
+  "built": "Apple, Google, Amazon and Horizon evidence, ownership checks and account erasure",
+  "result": "The same account flow covers four store evidence shapes; Amazon and Horizon access is rechecked.",
+  "previous": "07-account-erasure-interoperable-5"
 }

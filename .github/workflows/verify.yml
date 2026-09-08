@@ -29,6 +29,8 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm test
       - run: npm run test:tooling
+      - name: Reproduce service composition from the source archive
+        run: bun composition/export.mjs "$RUNNER_TEMP/commerce-composition"
       - name: Verify documentation matches the recorded source
         run: bun export-docs.mjs "$RUNNER_TEMP/commerce-docs"
       - run: npm run verify:checkpoints

@@ -8,6 +8,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  statSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -18,6 +19,7 @@ export const SOURCE_FILES = [
   ".gitignore",
   ".yarnrc.yml",
   "LICENSE",
+  "AGENTS.md",
   "README.md",
   "BUILD.md",
   "INTEGRATE.md",
@@ -27,6 +29,9 @@ export const SOURCE_FILES = [
   "package-lock.json",
   "contract.mjs",
   "provider.mjs",
+  "erasure.mjs",
+  "verify-erasure.mjs",
+  "verify-stores.mjs",
   "webhooks.mjs",
   "consumer.mjs",
   "client-bridge.mjs",
@@ -34,6 +39,16 @@ export const SOURCE_FILES = [
   "server.mjs",
   "verify.mjs",
   "dashboard.html",
+  "composition/README.md",
+  "composition/app-backend.mjs",
+  "composition/app-backend.test.mjs",
+  "composition/receiver.test.mjs",
+  "composition/commerce-client.mjs",
+  "composition/export.mjs",
+  "composition/memory-provider.mjs",
+  "composition/purchase-flow.mjs",
+  "composition/run.mjs",
+
   "capture.mjs",
   "export-docs.mjs",
   "checkpoint-tools.mjs",
@@ -42,12 +57,18 @@ export const SOURCE_FILES = [
 ];
 export const sha256 = (file) =>
   createHash("sha256").update(readFileSync(file)).digest("hex");
-export const hashes = (directory) =>
-  Object.fromEntries(
-    readdirSync(directory)
-      .sort()
-      .map((name) => [name, sha256(join(directory, name))]),
-  );
+export function hashes(directory) {
+  const entries = [];
+  function visit(relative) {
+    for (const name of readdirSync(join(directory, relative)).sort()) {
+      const file = join(relative, name);
+      if (statSync(join(directory, file)).isDirectory()) visit(file);
+      else entries.push([file, sha256(join(directory, file))]);
+    }
+  }
+  visit("");
+  return Object.fromEntries(entries);
+}
 export function sanitize(text) {
   const roots = [process.cwd(), import.meta.dir, homedir()]
     .filter(Boolean)
@@ -133,7 +154,7 @@ export function createPatch(before, after) {
   }
 }
 export function readRecords(directory) {
-  return readdirSync(directory)
+  const records = readdirSync(directory)
     .filter(
       (name) =>
         /^\d\d-[\w-]+$/.test(name) &&
@@ -143,4 +164,25 @@ export function readRecords(directory) {
     .map((name) =>
       JSON.parse(readFileSync(join(directory, name, "run.json"), "utf8")),
     );
+  const byId = new Map(records.map((record) => [record.id, record]));
+  const ordered = [],
+    visiting = new Set(),
+    visited = new Set();
+  function visit(record) {
+    if (visited.has(record.id)) return;
+    assert(!visiting.has(record.id), `Checkpoint cycle: ${record.id}`);
+    visiting.add(record.id);
+    if (record.previous) {
+      assert(
+        byId.has(record.previous),
+        `Missing predecessor: ${record.previous}`,
+      );
+      visit(byId.get(record.previous));
+    }
+    visiting.delete(record.id);
+    visited.add(record.id);
+    ordered.push(record);
+  }
+  records.forEach(visit);
+  return ordered;
 }
