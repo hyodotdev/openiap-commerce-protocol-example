@@ -9,7 +9,7 @@ import {
   rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "@playwright/test";
 import {
@@ -46,8 +46,10 @@ let lab, browser;
 try {
   mkdirSync(current);
   mkdirSync(previous);
-  for (const name of SOURCE_FILES)
+  for (const name of SOURCE_FILES) {
+    mkdirSync(dirname(join(current, name)), { recursive: true });
     cpSync(join(root, name), join(current, name));
+  }
   const sourceHashes = hashes(current);
   if (checkpoint.previous) {
     assert(/^\d\d-[\w-]+$/.test(checkpoint.previous));

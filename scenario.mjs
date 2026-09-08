@@ -36,6 +36,12 @@ export const STAGES = [
     result:
       "Access closes at the deadline. Restarting preserves purchases and deliveries.",
   },
+  {
+    title: "Delete the account",
+    built: "Idempotent erasure + receiver cleanup + durable deletion guard",
+    result:
+      "Alice is removed from purchases and event copies. Late deliveries cannot restore her account data.",
+  },
 ];
 
 export async function requestOperation(baseUrl, name, input, role = "server") {
@@ -291,6 +297,44 @@ export function createScenario(runtime) {
         "The final status is inactive",
         (await run("subscriptionStatus", { userId: FIXTURE.userId })).body
           .active,
+        false,
+      );
+    } else if (stage === 6) {
+      check(
+        "Verification credentials cannot erase users",
+        (await run("eraseUser", { userId: FIXTURE.userId }, "verification"))
+          .httpStatus,
+        403,
+      );
+      // The app removes its event copies before requesting provider erasure.
+      runtime.receiver.eraseUser(FIXTURE.userId);
+      const erased = await run("eraseUser", { userId: FIXTURE.userId });
+      check(
+        "Provider erasure completes",
+        [erased.body.accepted, erased.body.status],
+        [true, "completed"],
+      );
+      runtime.restart();
+      check(
+        "Erasure retry after restart returns the same job",
+        (await run("eraseUser", { userId: FIXTURE.userId })).body,
+        erased.body,
+      );
+      check(
+        "Purchase has no account identity",
+        runtime.provider.inspect().purchases.map((row) => row.userId),
+        [null],
+      );
+      check("App event copies are erased", runtime.receiver.count(), 0);
+      check(
+        "Erased account has no access",
+        (await run("entitlements", { userId: FIXTURE.userId })).body.productIds,
+        [],
+      );
+      check(
+        "A stale binding retry cannot restore identity",
+        (await run("bindPurchase", { ...evidence, userId: FIXTURE.userId }))
+          .body.bound,
         false,
       );
     }

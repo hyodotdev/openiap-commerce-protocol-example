@@ -10,14 +10,14 @@ checkpoint to make earlier work look correct.
 2. Run `npm test` and inspect the dashboard. Fix any failing behavior and repeat
    its check. Keep failure output; do not invent a failure for the narrative.
 3. Set a new `checkpoint.json.id` and point `previous` at the last completed
-   record. IDs are sorted lexically when verifying patches, so keep the new ID
-   after its predecessor. `step` is the demonstrated milestone, not the number
-   of review revisions.
+   record. Verification follows each record's `previous` link, so its predecessor
+   runs first regardless of folder name. `step` is the demonstrated milestone,
+   not the number of review revisions.
 4. Run `npm run capture`. This requires Bun, Node.js/npm, Git, tar, and Google
    Chrome. Capture installs/tests an isolated source archive, runs every
    available dashboard step, and checks desktop/mobile screens.
 5. Open the saved PNGs. Update `docs/build/guide.json` if the new record should
-   become one of the six featured milestones; keep all earlier records.
+   become one of the seven featured milestones; keep all earlier records.
 6. Run `npm run verify:checkpoints` to apply the full patch chain from an empty
    directory and install/test every archive independently.
 
@@ -51,7 +51,7 @@ bun export-docs.mjs /path/to/documentation-assets
 
 The receiver report must identify the selected final source. Export rejects source drift,
 missing archive verification, or a mismatched consumer report. It copies the
-six featured milestones and extracts both AI briefs from the selected final
+seven featured milestones and extracts both AI briefs from the selected final
 archive, so the published instructions match the code they describe.
 
 [Back to the example](../README.md) · [Build history](build/README.md)
