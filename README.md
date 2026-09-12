@@ -26,7 +26,7 @@ Restarting keeps the SQLite databases in `.runtime/`. For a fresh demo, use a
 fresh checkout. `PORT=5197 npm start` selects another port. No payment, account,
 server key, or cloud service setup is needed: every credential is a local fixture.
 
-![Actual clean-source result: Premium remains open after cancellation and two events are saved](evidence/final-screen.png)
+![Actual clean-source result: Premium remains open after cancellation and two events are saved](evidence/final-screen.jpg)
 
 ## Follow the build
 

@@ -40,8 +40,8 @@ const readme = readFileSync("README.md", "utf8").replace(
     `${label}(${label.startsWith("!") ? `https://raw.githubusercontent.com/hyodotdev/openiap-commerce-protocol-example/${sourceCommit}` : url}/${path})`,
 );
 writeFileSync(join(root, "from-scratch.md"), readme);
-copyFileSync("evidence/final-screen.png", join(root, "fresh-screen.png"));
-copyFileSync("evidence/final-mobile.png", join(root, "fresh-mobile.png"));
+copyFileSync("evidence/final-screen.jpg", join(root, "fresh-screen.jpg"));
+copyFileSync("evidence/final-mobile.jpg", join(root, "fresh-mobile.jpg"));
 writeFileSync(
   join(root, "fresh-source.tar.gz"),
   execFileSync("git", ["archive", "--format=tar.gz", "HEAD"], {
