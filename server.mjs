@@ -10,7 +10,7 @@ export function startServer({ path = ':memory:', port = 0 } = {}) {
       const url = new URL(request.url);
       if (url.pathname === '/' && request.method === 'GET') return new Response(Bun.file(new URL('./dashboard.html', import.meta.url)), { headers: { 'Content-Type': 'text/html' } });
       if (url.pathname === '/demo/state' && request.method === 'GET') return Response.json(backend.state(url.searchParams.get('user') === 'bob' ? 'bob' : 'alice'));
-      if (['/demo/verify', '/demo/bind'].includes(url.pathname) && request.method === 'POST') {
+      if (['/demo/verify', '/demo/bind', '/demo/cancel'].includes(url.pathname) && request.method === 'POST') {
         if (request.headers.get('origin') && request.headers.get('origin') !== url.origin) return failure('FORBIDDEN');
         let body;
         try { body = await request.json(); } catch { return failure('INVALID_REQUEST'); }
@@ -24,11 +24,22 @@ export function startServer({ path = ':memory:', port = 0 } = {}) {
         }
         const input = { store: 'fixture', fixture: { receipt: 'alice-monthly' } };
         if (url.pathname === '/demo/verify') await call('/commerce/v1/purchases/verify', input);
-        else {
+        else if (url.pathname === '/demo/bind') {
           await call('/commerce/v1/purchases/bind', { ...input, userId });
           await call('/commerce/v1/entitlements?userId=' + userId, undefined, 'GET');
         }
+        if (url.pathname === '/demo/cancel') {
+          await call('/fixture/cancel', { userId });
+          await call('/commerce/v1/subscriptions/status?userId=' + userId, undefined, 'GET');
+        }
         return Response.json({ trace });
+      }
+      if (url.pathname === '/fixture/cancel' && request.method === 'POST') {
+        if (request.headers.get('authorization') !== `Bearer ${CREDENTIALS.server}`) return failure('UNAUTHORIZED');
+        let input;
+        try { input = await request.json(); } catch { return failure('INVALID_REQUEST'); }
+        if (!valid('#/$defs/SubscriptionStatusInput', input)) return failure('INVALID_REQUEST');
+        return Response.json(backend.cancel(input.userId));
       }
       const operation = manifest.operations.find(op => op.path === url.pathname && op.method === request.method);
       if (!operation) return failure('NOT_FOUND');

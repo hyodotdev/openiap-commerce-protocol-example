@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-09-12T18:16:18.980863+00:00",
+  "command": [
+    "npm",
+    "test"
+  ],
+  "exitCode": 0,
+  "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+  "stderr": "\nownership.test.mjs:\n(pass) only server role can bind; concurrent claims select one owner and reads contain no evidence [21.99ms]\n\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [2.31ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and unfinished discovery [2.02ms]\n\nlifecycle.test.mjs:\n(pass) cancellation keeps paid access and atomically saves one observation and immutable event [2.18ms]\n\n 4 pass\n 0 fail\n 45 expect() calls\nRan 4 tests across 4 files. [88.00ms]\n",
+  "sourceHashes": {
+    ".gitignore": "01eac943c846940d6a989697e4eb0bdb332a1c7d6f82843182401368954e03b6",
+    "README.md": "c03fe0048eb67ac758da3e9c51332b3836b2e16683d8e2abd3f2f11219ee6224",
+    "backend.mjs": "86d3e7e3601ed5a2b3aa689e5b84b8036be33baffa11843825ef2444ffd15673",
+    "backend.test.mjs": "c3f93f172515f8539dd602e665a7b81177f97fef3bf46bd2a8da50f9ba35e05c",
+    "contract.mjs": "489d0a6f14137129a6d3beb1afac17492f21ac1fce6d42dc2b61794afd331409",
+    "dashboard.html": "d04e3d27181fcfdb90162b19b4cdf8a27db5b077f2fc948ba18dc4a7ce14eae7",
+    "lifecycle.test.mjs": "e21f6b80793c9d23917d9eeb69f28c37dcfce1636686050338a372e9276eed54",
+    "ownership.test.mjs": "4beba1471228aebf3eab14c4a805e64f3d3a8ce06a822329e3a49f97827249c6",
+    "package-lock.json": "2f5fdd61052360cb681df584856ffff1ff6cf1465718ac334bbc1797c4eefb70",
+    "package.json": "b319a5ada8167804fe9bd72d0573c2e85ca12b4a241c4385f0e08c3760f90496",
+    "server.mjs": "2a91f02d8d7d64405a21af7590d1ee159c83d4fe2c9bbcb18be742585d067c40",
+    "test-client.mjs": "3e5e62b75161953d721c17387d4ab164c1da24a64c029ddb6aba911f34cb0db6",
+    "verification.test.mjs": "fd380e2a169154aee92a8b7fc1dda045264ba12c48f00d3289d2829f9d0b2928"
+  }
+}

@@ -59,3 +59,16 @@ Tests also race both claims, reject verification-role account access, and check
 that status/entitlement replies contain no receipt.
 
 [Actual tests](evidence/03-ownership.json) · [Working access](evidence/03-screen.png)
+
+## Step 4: cancel renewal, keep paid time
+
+Click **Cancel renewal**. `/fixture/cancel` simulates the store observation;
+it is a demo control, not a Commerce Protocol cancellation API. Then the
+server reads `/commerce/v1/subscriptions/status`: `willRenew: false` with
+`active: true`. Cancellation does not remove the time Alice already paid for.
+
+The provider writes the observation, changed purchase, and immutable event in
+one SQLite transaction. An injected write failure rolls all three back. Repeating
+the observation produces no second cancellation event. Delivery is next.
+
+[Actual tests including rollback](evidence/04-lifecycle.json) · [Cancellation result](evidence/04-screen.png)
