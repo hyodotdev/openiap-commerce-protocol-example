@@ -86,3 +86,19 @@ servers run locally. Loopback delivery is an explicit fixture exception, so this
 checkpoint does not advertise the production `events` profile.
 
 [Actual tests](evidence/05-delivery.json) · [Delivery screen](evidence/05-screen.png)
+
+## Step 6: expire access and restart
+
+Click **Move to the expiry date**. The demo advances its clock, reads access
+before applying the expiry observation, then records that observation. At the
+exact deadline, `productIds: []` closes Premium; no event delivery is needed
+for the synchronous gate to close.
+
+The process test starts this server in a fresh directory, buys and cancels,
+then sends `SIGKILL` while an event is still pending. A new process reads the
+same databases, retains ownership and inbox entries, and delivers the pending
+event. Another abrupt restart after the clock reaches expiry keeps access off.
+This proves that specific local recovery path, not all operating-system or
+production recovery scenarios.
+
+[Actual process and boundary tests](evidence/06-recovery.json) · [Expiry screen](evidence/06-screen.png)

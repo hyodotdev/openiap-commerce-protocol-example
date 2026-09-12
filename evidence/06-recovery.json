@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-09-12T18:21:44.003837+00:00",
+  "command": [
+    "npm",
+    "test"
+  ],
+  "exitCode": 0,
+  "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+  "stderr": "\nrecovery.test.mjs:\n(pass) access closes at the exact expiry boundary before the lifecycle observation [18.61ms]\n(pass) separate process survives abrupt termination with pending events, ownership, inbox, and expiry [3346.79ms]\n\ndelivery.test.mjs:\n(pass) published signature and response vectors pass against the new transport [0.42ms]\n(pass) real HTTP retry and lost acknowledgement retain bytes and IDs, deduplicate, reject tampering, and dead-letter [5.28ms]\n\nownership.test.mjs:\n(pass) only server role can bind; concurrent claims select one owner and reads contain no evidence [6.88ms]\n\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [2.36ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and schema-valid discovery [10.63ms]\n\nlifecycle.test.mjs:\n(pass) cancellation keeps paid access and atomically saves one observation and immutable event [2.33ms]\n\n 8 pass\n 0 fail\n 117 expect() calls\nRan 8 tests across 6 files. [3.46s]\n",
+  "sourceHashes": {
+    ".gitignore": "01eac943c846940d6a989697e4eb0bdb332a1c7d6f82843182401368954e03b6",
+    "README.md": "aa29f1650cd9cca03cea62c0fcaaa7d0aacc652eaf1861fec43f4fa6773ed0f5",
+    "backend.mjs": "b07a3365bccb98cf4f2ca0f4e23443ddfa1d57deb5429ab050d1ed1aca501d28",
+    "backend.test.mjs": "12e1f82d331a7cf8cea7f2f1597057af8ed23a051941642db40e3f3dd24cb134",
+    "contract.mjs": "6d1bd637d56344a4f017933cd3a9c550c6c0518bd6af0dd38e031f4e02b22f71",
+    "dashboard.html": "2674b3fc1a7b6c140b2b38e488494b75ff98fa366a5d6b3b9e36929a5fd58262",
+    "delivery.mjs": "16508e02cdf8013aaef24f6381f0a32edb81015e329fd599baa0ecefb4c92294",
+    "delivery.test.mjs": "3acf8afb6748a9710070ece7139fc15f3744fb033b4be3ce1b0f8f41b70f0135",
+    "lifecycle.test.mjs": "e21f6b80793c9d23917d9eeb69f28c37dcfce1636686050338a372e9276eed54",
+    "ownership.test.mjs": "4beba1471228aebf3eab14c4a805e64f3d3a8ce06a822329e3a49f97827249c6",
+    "package-lock.json": "2f5fdd61052360cb681df584856ffff1ff6cf1465718ac334bbc1797c4eefb70",
+    "package.json": "b319a5ada8167804fe9bd72d0573c2e85ca12b4a241c4385f0e08c3760f90496",
+    "recovery.test.mjs": "48a334d603bcecd957c1d4d3910a858321e4f65af03db9f17bac1a11ad6d7d42",
+    "server.mjs": "8c7dcbe92e7b901822ac9db27f2b528485001b6a09fd49659c50ad938dbc6a6f",
+    "test-client.mjs": "3e5e62b75161953d721c17387d4ab164c1da24a64c029ddb6aba911f34cb0db6",
+    "verification.test.mjs": "fd380e2a169154aee92a8b7fc1dda045264ba12c48f00d3289d2829f9d0b2928"
+  }
+}

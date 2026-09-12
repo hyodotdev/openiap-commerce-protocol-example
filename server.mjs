@@ -1,6 +1,6 @@
 import { startReceiver, createDelivery } from './delivery.mjs';
 import { mkdirSync } from 'node:fs';
-import { openBackend } from './backend.mjs';
+import { openBackend, END } from './backend.mjs';
 import { manifest, valid, failure, result, ProtocolFault } from './contract.mjs';
 
 export const CREDENTIALS = { verification: 'fixture-verification', server: 'fixture-server' };
@@ -13,7 +13,7 @@ export function startServer({ path = ':memory:', port = 0, receiverPath = ':memo
       const url = new URL(request.url);
       if (url.pathname === '/' && request.method === 'GET') return new Response(Bun.file(new URL('./dashboard.html', import.meta.url)), { headers: { 'Content-Type': 'text/html' } });
       if (url.pathname === '/demo/state' && request.method === 'GET') return Response.json({ ...backend.state(url.searchParams.get('user') === 'bob' ? 'bob' : 'alice'), inbox: receiver.db.query('SELECT count(*) n FROM inbox').get().n });
-      if (['/demo/verify', '/demo/bind', '/demo/cancel', '/demo/deliver'].includes(url.pathname) && request.method === 'POST') {
+      if (['/demo/verify', '/demo/bind', '/demo/cancel', '/demo/deliver', '/demo/expire'].includes(url.pathname) && request.method === 'POST') {
         if (request.headers.get('origin') && request.headers.get('origin') !== url.origin) return failure('FORBIDDEN');
         let body;
         try { body = await request.json(); } catch { return failure('INVALID_REQUEST'); }
@@ -35,18 +35,24 @@ export function startServer({ path = ':memory:', port = 0, receiverPath = ':memo
           await call('/fixture/cancel', { userId });
           await call('/commerce/v1/subscriptions/status?userId=' + userId, undefined, 'GET');
         }
+        if (url.pathname === '/demo/expire') {
+          await call('/fixture/clock', { now: END });
+          await call('/commerce/v1/entitlements?userId=' + userId, undefined, 'GET');
+          await call('/fixture/expire', { userId });
+        }
         if (url.pathname === '/demo/deliver') {
           receiver.state.failNext = true;
           trace.push(...await delivery.drain());
         }
         return Response.json({ trace });
       }
-      if (url.pathname === '/fixture/cancel' && request.method === 'POST') {
+      if (['/fixture/cancel', '/fixture/clock', '/fixture/expire'].includes(url.pathname) && request.method === 'POST') {
         if (request.headers.get('authorization') !== `Bearer ${CREDENTIALS.server}`) return failure('UNAUTHORIZED');
         let input;
         try { input = await request.json(); } catch { return failure('INVALID_REQUEST'); }
+        if (url.pathname === '/fixture/clock') return Response.json(backend.setClock(input?.now));
         if (!valid('#/$defs/SubscriptionStatusInput', input)) return failure('INVALID_REQUEST');
-        return Response.json(backend.cancel(input.userId));
+        return Response.json(url.pathname === '/fixture/expire' ? backend.expire(input.userId) : backend.cancel(input.userId));
       }
       const operation = manifest.operations.find(op => op.path === url.pathname && op.method === request.method);
       if (!operation) return failure('NOT_FOUND');

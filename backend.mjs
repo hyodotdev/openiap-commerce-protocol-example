@@ -3,7 +3,7 @@ import { valid } from './contract.mjs';
 import { ProtocolFault } from './contract.mjs';
 import { Database } from 'bun:sqlite';
 
-export const STAGE = 5;
+export const STAGE = 6;
 export const START = Date.UTC(2026, 8, 13);
 export const END = Date.UTC(2026, 9, 13);
 export const PRODUCT = 'premium.monthly';
@@ -14,6 +14,7 @@ export function openBackend(path) {
       evidence TEXT PRIMARY KEY, user_id TEXT, state TEXT NOT NULL,
       expires_at INTEGER NOT NULL, will_renew INTEGER NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS notified_gates (evidence TEXT PRIMARY KEY, active INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS observations (id TEXT PRIMARY KEY, evidence TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS outbox (id TEXT PRIMARY KEY, user_id TEXT, body TEXT NOT NULL, delivery_id TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', attempts INTEGER NOT NULL DEFAULT 0, next_attempt INTEGER NOT NULL DEFAULT 0);
     CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value INTEGER NOT NULL);
@@ -31,15 +32,16 @@ export function openBackend(path) {
     const event = { eventId: randomUUID(), eventType, eventVersion: '1.0', occurredAt, processedAt: now(), store: 'fixture', environment: 'sandbox', projectId: 'fresh-example', ...(row.user_id ? { userId: row.user_id } : {}), productId: PRODUCT, subscription: snapshot(row) };
     if (!valid('#/$defs/CommerceEvent', event)) throw new ProtocolFault('INTERNAL_ERROR');
     db.query('INSERT INTO outbox (id,user_id,body,delivery_id) VALUES (?,?,?,?)').run(event.eventId, row.user_id, JSON.stringify(event), randomUUID());
+    if (row.user_id) db.query('INSERT OR REPLACE INTO notified_gates VALUES (?,?)').run(row.evidence, Number(event.subscription.active));
     return event;
   }
   const api = {
     db,
     now,
     capabilities() {
-      const supported = new Set(['initialValidation', 'subscriptions', 'entitlements']);
+      const supported = new Set(['initialValidation', 'subscriptions', 'entitlements', 'expiration']);
       const axes = ['initialValidation','serverNotifications','subscriptions','renewalEvents','refundEvents','expiration','reconciliation','entitlements','revenueAmount'];
-      return { specVersion: '1.0', implementation: { name: 'Fresh local fixture', version: '0.0.0' }, eventTypes: ['entitlement.granted', 'subscription.canceled'], stores: { fixture: Object.fromEntries(axes.map(key => [key, { provider: supported.has(key), implementation: supported.has(key), notes: supported.has(key) ? 'Fictional fixture only; no real store connected.' : 'Not implemented by this local fixture.' }])) } };
+      return { specVersion: '1.0', implementation: { name: 'Fresh local fixture', version: '0.0.0' }, eventTypes: ['entitlement.granted', 'subscription.canceled', 'subscription.expired', 'entitlement.revoked'], stores: { fixture: Object.fromEntries(axes.map(key => [key, { provider: supported.has(key), implementation: supported.has(key), notes: supported.has(key) ? 'Fictional fixture only; no real store connected.' : 'Not implemented by this local fixture.' }])) } };
     },
     bind(input) {
       if (input.store !== 'fixture') return { bound: false };
@@ -53,6 +55,27 @@ export function openBackend(path) {
         return { bound: true };
       }).immediate();
     },
+    setClock(value) {
+      if (!Number.isSafeInteger(value) || value < now()) throw new ProtocolFault('INVALID_REQUEST');
+      db.query("UPDATE settings SET value=? WHERE key='clock'").run(value);
+      return { now: now() };
+    },
+    expire(userId) {
+      return db.transaction(() => {
+        const row = db.query('SELECT * FROM purchases WHERE user_id=? LIMIT 1').get(userId);
+        if (!row) throw new ProtocolFault('NOT_FOUND');
+        if (now() < row.expires_at) throw new ProtocolFault('CONFLICT');
+        const observation = `expire:${row.evidence}`;
+        if (db.query('SELECT id FROM observations WHERE id=?').get(observation)) return { changed: false };
+        const previousGate = db.query('SELECT active FROM notified_gates WHERE evidence=?').get(row.evidence)?.active;
+        db.query("UPDATE purchases SET state='Expired',will_renew=0 WHERE evidence=?").run(row.evidence);
+        db.query('INSERT INTO observations VALUES (?,?)').run(observation, row.evidence);
+        const expired = { ...row, state: 'Expired', will_renew: 0 };
+        emit('subscription.expired', expired, row.expires_at);
+        if (previousGate && row.user_id) emit('entitlement.revoked', expired, row.expires_at);
+        return { changed: true };
+      }).immediate();
+    },
     cancel(userId) {
       return db.transaction(() => {
         const row = db.query('SELECT * FROM purchases WHERE user_id=? LIMIT 1').get(userId);
@@ -61,7 +84,9 @@ export function openBackend(path) {
         if (db.query('SELECT id FROM observations WHERE id=?').get(observation)) return { changed: false };
         db.query('UPDATE purchases SET will_renew=0 WHERE evidence=?').run(row.evidence);
         db.query('INSERT INTO observations VALUES (?,?)').run(observation, row.evidence);
+        const previousGate = db.query('SELECT active FROM notified_gates WHERE evidence=?').get(row.evidence)?.active;
         const event = emit('subscription.canceled', { ...row, will_renew: 0 }, now());
+        if (previousGate && !event.subscription.active && row.user_id) emit('entitlement.revoked', { ...row, will_renew: 0 }, now());
         return { changed: true, eventId: event.eventId };
       }).immediate();
     },
@@ -90,7 +115,7 @@ export function openBackend(path) {
         purchases: db.query('SELECT count(*) AS count FROM purchases').get().count,
         queued: db.query("SELECT count(*) AS count FROM outbox WHERE status='pending'").get().count,
         access: api.status({ userId }).active,
-        message: api.status({ userId }).active ? (api.status({ userId }).subscription.willRenew ? 'Premium is open. Cancel renewal to see why paid access continues.' : 'Renewal is canceled. Premium stays open until October 13; the change is queued for delivery.') : 'This customer has no current paid access. Verify the receipt, then connect it to Alice.',
+        message: api.status({ userId }).active ? (api.status({ userId }).subscription.willRenew ? 'Premium is open. Cancel renewal to see why paid access continues.' : 'Renewal is canceled. Premium stays open until October 13; the change is queued for delivery.') : (api.status({ userId }).subscription ? 'The paid period has ended. Premium is locked, including after a server restart.' : 'This customer has no current paid access. Verify the receipt, then connect it to Alice.'),
       };
     },
     close() { db.close(); },
