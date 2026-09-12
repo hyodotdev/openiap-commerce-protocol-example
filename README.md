@@ -32,3 +32,15 @@ Discovery returns `INTERNAL_ERROR` while the provider is incomplete; it does
 not pretend to serve a protocol profile. Next, build purchase verification.
 
 [Actual test output](evidence/01-server.json) · [Running screen](evidence/01-screen.png)
+
+## Step 2: verify a receipt
+
+Click **Verify sample receipt**. The dashboard's server sends
+`POST /commerce/v1/purchases/verify` with the displayed fixture input.
+`isValid: true` saves one purchase; repeating it still saves one.
+Ownership and access are not implemented at this checkpoint.
+The open `fixture` store extension uses `fixture.receipt`; it is not an Apple
+or Google receipt format. `not-a-receipt` returns `isValid: false`, while
+`outage` returns HTTP 502 because no verdict could be obtained.
+
+[Actual tests](evidence/02-verification.json) · [Screen and response](evidence/02-screen.png)

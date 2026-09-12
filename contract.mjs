@@ -16,3 +16,7 @@ export function result(operation, body) {
   if (!valid(operation.result, body)) throw new Error('Invalid operation response');
   return Response.json(body, { status: operation.successStatus });
 }
+
+export class ProtocolFault extends Error {
+  constructor(code) { super(code); this.code = code; }
+}
