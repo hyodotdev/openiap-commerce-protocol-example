@@ -68,7 +68,7 @@ storage changes in each milestone.
 
 Store receipts, Alice/Bob sessions, the clock, and Google-shaped tokens are
 fixtures. This does not verify a real store purchase, native SDK checkout,
-Nami integration, revenue reporting, or deployment. Loopback delivery is a local
+external product integration, revenue reporting, or deployment. Loopback delivery is a local
 exception; the production events profile and GraphQL are not claimed.
 
 This is an iterative implementation by the same AI with prior conversation
