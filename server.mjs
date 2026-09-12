@@ -9,13 +9,26 @@ export function startServer({ path = ':memory:', port = 0 } = {}) {
     try {
       const url = new URL(request.url);
       if (url.pathname === '/' && request.method === 'GET') return new Response(Bun.file(new URL('./dashboard.html', import.meta.url)), { headers: { 'Content-Type': 'text/html' } });
-      if (url.pathname === '/demo/state' && request.method === 'GET') return Response.json(backend.state());
-      if (url.pathname === '/demo/verify' && request.method === 'POST') {
+      if (url.pathname === '/demo/state' && request.method === 'GET') return Response.json(backend.state(url.searchParams.get('user') === 'bob' ? 'bob' : 'alice'));
+      if (['/demo/verify', '/demo/bind'].includes(url.pathname) && request.method === 'POST') {
         if (request.headers.get('origin') && request.headers.get('origin') !== url.origin) return failure('FORBIDDEN');
+        let body;
+        try { body = await request.json(); } catch { return failure('INVALID_REQUEST'); }
+        const userId = body.user === 'bob' ? 'bob' : 'alice';
+        const trace = [];
+        async function call(path, input, method = 'POST') {
+          const response = await fetch(server.url.origin + path, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${CREDENTIALS.server}` }, ...(method === 'POST' ? { body: JSON.stringify(input) } : {}) });
+          const data = await response.json();
+          trace.push({ method, path, ...(method === 'POST' ? { input } : {}), status: response.status, response: data });
+          return data;
+        }
         const input = { store: 'fixture', fixture: { receipt: 'alice-monthly' } };
-        const path = '/commerce/v1/purchases/verify';
-        const response = await fetch(server.url.origin + path, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${CREDENTIALS.server}` }, body: JSON.stringify(input) });
-        return Response.json({ trace: [{ method: 'POST', path, input, status: response.status, response: await response.json() }] }, { status: response.status });
+        if (url.pathname === '/demo/verify') await call('/commerce/v1/purchases/verify', input);
+        else {
+          await call('/commerce/v1/purchases/bind', { ...input, userId });
+          await call('/commerce/v1/entitlements?userId=' + userId, undefined, 'GET');
+        }
+        return Response.json({ trace });
       }
       const operation = manifest.operations.find(op => op.path === url.pathname && op.method === request.method);
       if (!operation) return failure('NOT_FOUND');
@@ -31,6 +44,9 @@ export function startServer({ path = ':memory:', port = 0 } = {}) {
       } else input = Object.fromEntries(url.searchParams);
       if (operation.input && !valid(operation.input, input)) return failure('INVALID_REQUEST');
       if (operation.name === 'verifyPurchase') return result(operation, backend.verify(input));
+      if (operation.name === 'bindPurchase') return result(operation, backend.bind(input));
+      if (operation.name === 'entitlements') return result(operation, backend.entitlements(input));
+      if (operation.name === 'subscriptionStatus') return result(operation, backend.status(input));
       return failure('UNSUPPORTED_PROFILE');
     } catch (error) { return failure(error instanceof ProtocolFault ? error.code : 'INTERNAL_ERROR'); }
   }});

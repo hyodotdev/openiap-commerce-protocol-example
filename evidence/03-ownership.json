@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-09-12T18:14:43.341936+00:00",
+  "command": [
+    "npm",
+    "test"
+  ],
+  "exitCode": 0,
+  "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+  "stderr": "\nownership.test.mjs:\n(pass) only server role can bind; concurrent claims select one owner and reads contain no evidence [19.90ms]\n\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [2.09ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and unfinished discovery [2.00ms]\n\n 3 pass\n 0 fail\n 33 expect() calls\nRan 3 tests across 3 files. [84.00ms]\n",
+  "sourceHashes": {
+    ".gitignore": "01eac943c846940d6a989697e4eb0bdb332a1c7d6f82843182401368954e03b6",
+    "README.md": "263479e22712c72f93ba410615429c60756671fc48325a4f7a708b34d54f059e",
+    "backend.mjs": "4f4899ae3ae5d2a34e8c1bfed0fd698cdab42e5c562feba8d31ffbf694695df8",
+    "backend.test.mjs": "c3f93f172515f8539dd602e665a7b81177f97fef3bf46bd2a8da50f9ba35e05c",
+    "contract.mjs": "489d0a6f14137129a6d3beb1afac17492f21ac1fce6d42dc2b61794afd331409",
+    "dashboard.html": "d04e3d27181fcfdb90162b19b4cdf8a27db5b077f2fc948ba18dc4a7ce14eae7",
+    "ownership.test.mjs": "4beba1471228aebf3eab14c4a805e64f3d3a8ce06a822329e3a49f97827249c6",
+    "package-lock.json": "2f5fdd61052360cb681df584856ffff1ff6cf1465718ac334bbc1797c4eefb70",
+    "package.json": "b319a5ada8167804fe9bd72d0573c2e85ca12b4a241c4385f0e08c3760f90496",
+    "server.mjs": "b2c28dd401d4092a79f762acecc6008ee12775b8b8524da8c82529319c901354",
+    "test-client.mjs": "3e5e62b75161953d721c17387d4ab164c1da24a64c029ddb6aba911f34cb0db6",
+    "verification.test.mjs": "fd380e2a169154aee92a8b7fc1dda045264ba12c48f00d3289d2829f9d0b2928"
+  }
+}

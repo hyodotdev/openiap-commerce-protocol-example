@@ -44,3 +44,18 @@ or Google receipt format. `not-a-receipt` returns `isValid: false`, while
 `outage` returns HTTP 502 because no verdict could be obtained.
 
 [Actual tests](evidence/02-verification.json) · [Screen and response](evidence/02-screen.png)
+
+## Step 3: connect the purchase to Alice
+
+Select Alice and click **Connect purchase to customer**. The app-facing fixture
+handler selects the customer, sends `POST /commerce/v1/purchases/bind`, then
+`GET /commerce/v1/entitlements?userId=alice`. `bound: true` and
+`productIds: ["premium.monthly"]` open Premium. Select Bob and repeat: the
+existing ownership stays with Alice and Bob receives no access.
+
+The customer selector is a fictional session switch, not authentication.
+Provider credentials stay in `server.mjs`; the browser calls the demo gateway.
+Tests also race both claims, reject verification-role account access, and check
+that status/entitlement replies contain no receipt.
+
+[Actual tests](evidence/03-ownership.json) · [Working access](evidence/03-screen.png)
