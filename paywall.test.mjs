@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test";
+import { test, expect, spyOn } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -76,6 +76,61 @@ test("paywall purchase, renewal and cancellation join two store fixtures to the 
     expect(app.attribution.report()).toEqual(report);
   } finally {
     await app.close();
+  }
+});
+
+test("provider credentials require HTTPS outside literal loopback and never follow redirects", async () => {
+  const sent = [];
+  const transport = spyOn(globalThis, "fetch").mockImplementation(
+    async (url, options) => {
+      sent.push({ url, options });
+      return Response.json({
+        userId: "alice-apple",
+        productIds: [],
+        subscriptions: [],
+      });
+    },
+  );
+  const app = {
+    stores: [PAYWALL_STORES[0]],
+    provider: { baseUrl: "", credential: "fixture-secret" },
+    attribution: { report: () => ({}) },
+    receiver: { url: "http://127.0.0.1/webhooks/commerce" },
+  };
+  const request = new Request("http://127.0.0.1/paywall/state");
+  try {
+    for (const baseUrl of [
+      "http://provider.example",
+      "http://127.0.0.1.example",
+      "http://localhost",
+      "http://192.168.1.2",
+      "http://[::2]",
+      "ftp://127.0.0.1",
+    ]) {
+      app.provider.baseUrl = baseUrl;
+      await expect(handlePaywall(request, app)).rejects.toThrow(
+        "requires HTTPS",
+      );
+      expect(sent).toHaveLength(0);
+    }
+    for (const baseUrl of [
+      "https://provider.example",
+      "http://127.0.0.1:5181",
+      "http://127.0.0.2:5181/",
+      "http://[::1]:5181",
+    ]) {
+      app.provider.baseUrl = baseUrl;
+      expect((await handlePaywall(request, app)).status).toBe(200);
+      expect(sent.at(-1).url).toBe(
+        new URL("/commerce/v1/entitlements?userId=alice-apple", baseUrl).href,
+      );
+      expect(sent.at(-1).options.headers.Authorization).toBe(
+        "Bearer fixture-secret",
+      );
+      expect(sent.at(-1).options.redirect).toBe("error");
+    }
+  } finally {
+    transport.mockRestore();
   }
 });
 

@@ -8,7 +8,18 @@ export async function handlePaywall(request, app) {
   const provider = app.provider;
   const trace = [];
   async function call(path, body, method = "POST") {
-    const destination = new URL(path, provider.baseUrl).href;
+    const target = new URL(path, provider.baseUrl);
+    const loopback =
+      /^127(?:\.\d{1,3}){3}$/.test(target.hostname) ||
+      target.hostname === "[::1]";
+    if (
+      target.protocol !== "https:" &&
+      !(target.protocol === "http:" && loopback)
+    )
+      throw Error(
+        "Provider URL requires HTTPS outside literal loopback addresses",
+      );
+    const destination = target.href;
     const response = await fetch(destination, {
       method,
       headers: {

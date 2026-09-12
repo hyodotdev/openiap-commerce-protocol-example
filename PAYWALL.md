@@ -74,7 +74,10 @@ attribution policy. A paywall-only product can leave analytics to another servic
 The default host fixture catalog supplies the purchase-chain/account association.
 `paywall.mjs` reads access through the configured provider's HTTP API. Configure
 its server-side `provider.baseUrl` and `provider.credential` for another provider;
-keep credentials out of the browser. The receiver accepts one configured
+keep credentials out of the browser. Provider requests require HTTPS; plain HTTP
+is accepted only for literal IPv4/IPv6 loopback addresses in local tests.
+Redirects are rejected so a provider cannot forward credentials to another URL.
+The receiver accepts one configured
 `projectId` and signing `secret`; use a separate database for each emitter.
 `/fixture/*` controls belong only to the local demo provider.
 
