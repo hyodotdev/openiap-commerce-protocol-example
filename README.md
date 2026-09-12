@@ -72,3 +72,17 @@ one SQLite transaction. An injected write failure rolls all three back. Repeatin
 the observation produces no second cancellation event. Delivery is next.
 
 [Actual tests including rollback](evidence/04-lifecycle.json) · [Cancellation result](evidence/04-screen.png)
+
+## Step 5: deliver an event to another server
+
+Click **Deliver queued events**. A separate loopback HTTP receiver deliberately
+returns 503 once; the sender waits for backoff and retries. The response panel
+shows both real attempts, their stable event/delivery IDs, and fresh signatures.
+The receiver inserts the authenticated event into SQLite before acknowledging.
+
+Tests reproduce the published signature vectors, tampering, a lost acknowledgement,
+no duplicate inbox effect, and a four-attempt dead-letter limit. Both HTTP
+servers run locally. Loopback delivery is an explicit fixture exception, so this
+checkpoint does not advertise the production `events` profile.
+
+[Actual tests](evidence/05-delivery.json) · [Delivery screen](evidence/05-screen.png)

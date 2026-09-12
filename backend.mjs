@@ -3,7 +3,7 @@ import { valid } from './contract.mjs';
 import { ProtocolFault } from './contract.mjs';
 import { Database } from 'bun:sqlite';
 
-export const STAGE = 4;
+export const STAGE = 5;
 export const START = Date.UTC(2026, 8, 13);
 export const END = Date.UTC(2026, 9, 13);
 export const PRODUCT = 'premium.monthly';
@@ -36,6 +36,11 @@ export function openBackend(path) {
   const api = {
     db,
     now,
+    capabilities() {
+      const supported = new Set(['initialValidation', 'subscriptions', 'entitlements']);
+      const axes = ['initialValidation','serverNotifications','subscriptions','renewalEvents','refundEvents','expiration','reconciliation','entitlements','revenueAmount'];
+      return { specVersion: '1.0', implementation: { name: 'Fresh local fixture', version: '0.0.0' }, eventTypes: ['entitlement.granted', 'subscription.canceled'], stores: { fixture: Object.fromEntries(axes.map(key => [key, { provider: supported.has(key), implementation: supported.has(key), notes: supported.has(key) ? 'Fictional fixture only; no real store connected.' : 'Not implemented by this local fixture.' }])) } };
+    },
     bind(input) {
       if (input.store !== 'fixture') return { bound: false };
       const receipt = input.fixture?.receipt;

@@ -2,7 +2,7 @@ import { test, expect } from 'bun:test';
 import { startServer } from './server.mjs';
 import { valid } from './contract.mjs';
 
-test('HTTP server starts with an empty SQLite database and unfinished discovery', async () => {
+test('HTTP server starts with an empty SQLite database and schema-valid discovery', async () => {
   const app = startServer();
   try {
     const response = await fetch(app.url + '/demo/state');
@@ -12,8 +12,7 @@ test('HTTP server starts with an empty SQLite database and unfinished discovery'
     expect(state.access).toBe(false);
     const capabilities = await fetch(app.url + '/commerce/v1/capabilities');
     const body = await capabilities.json();
-    expect(capabilities.status).toBe(500);
-    expect(body.error.code).toBe('INTERNAL_ERROR');
-    expect(valid('#/$defs/ProtocolErrorResponse', body)).toBe(true);
+    expect(capabilities.status).toBe(200);
+    expect(valid('#/$defs/ProviderCapabilities', body)).toBe(true);
   } finally { await app.close(); }
 });

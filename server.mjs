@@ -1,16 +1,19 @@
+import { startReceiver, createDelivery } from './delivery.mjs';
 import { mkdirSync } from 'node:fs';
 import { openBackend } from './backend.mjs';
 import { manifest, valid, failure, result, ProtocolFault } from './contract.mjs';
 
 export const CREDENTIALS = { verification: 'fixture-verification', server: 'fixture-server' };
-export function startServer({ path = ':memory:', port = 0 } = {}) {
+export function startServer({ path = ':memory:', port = 0, receiverPath = ':memory:', clock = Date.now } = {}) {
   const backend = openBackend(path);
+  const receiver = startReceiver({ path: receiverPath, clock });
+  const delivery = createDelivery(backend, receiver.url, { clock });
   const server = Bun.serve({ hostname: '127.0.0.1', port, maxRequestBodySize: 32768, async fetch(request) {
     try {
       const url = new URL(request.url);
       if (url.pathname === '/' && request.method === 'GET') return new Response(Bun.file(new URL('./dashboard.html', import.meta.url)), { headers: { 'Content-Type': 'text/html' } });
-      if (url.pathname === '/demo/state' && request.method === 'GET') return Response.json(backend.state(url.searchParams.get('user') === 'bob' ? 'bob' : 'alice'));
-      if (['/demo/verify', '/demo/bind', '/demo/cancel'].includes(url.pathname) && request.method === 'POST') {
+      if (url.pathname === '/demo/state' && request.method === 'GET') return Response.json({ ...backend.state(url.searchParams.get('user') === 'bob' ? 'bob' : 'alice'), inbox: receiver.db.query('SELECT count(*) n FROM inbox').get().n });
+      if (['/demo/verify', '/demo/bind', '/demo/cancel', '/demo/deliver'].includes(url.pathname) && request.method === 'POST') {
         if (request.headers.get('origin') && request.headers.get('origin') !== url.origin) return failure('FORBIDDEN');
         let body;
         try { body = await request.json(); } catch { return failure('INVALID_REQUEST'); }
@@ -32,6 +35,10 @@ export function startServer({ path = ':memory:', port = 0 } = {}) {
           await call('/fixture/cancel', { userId });
           await call('/commerce/v1/subscriptions/status?userId=' + userId, undefined, 'GET');
         }
+        if (url.pathname === '/demo/deliver') {
+          receiver.state.failNext = true;
+          trace.push(...await delivery.drain());
+        }
         return Response.json({ trace });
       }
       if (url.pathname === '/fixture/cancel' && request.method === 'POST') {
@@ -43,7 +50,7 @@ export function startServer({ path = ':memory:', port = 0 } = {}) {
       }
       const operation = manifest.operations.find(op => op.path === url.pathname && op.method === request.method);
       if (!operation) return failure('NOT_FOUND');
-      if (operation.name === 'providerCapabilities') return failure('INTERNAL_ERROR');
+      if (operation.name === 'providerCapabilities') return result(operation, backend.capabilities());
       const credential = request.headers.get('authorization');
       const role = Object.keys(CREDENTIALS).find(key => credential === `Bearer ${CREDENTIALS[key]}`);
       if (!role) return failure('UNAUTHORIZED');
@@ -61,11 +68,11 @@ export function startServer({ path = ':memory:', port = 0 } = {}) {
       return failure('UNSUPPORTED_PROFILE');
     } catch (error) { return failure(error instanceof ProtocolFault ? error.code : 'INTERNAL_ERROR'); }
   }});
-  return { server, backend, url: server.url.origin, async close() { await server.stop(true); backend.close(); } };
+  return { server, backend, receiver, delivery, url: server.url.origin, async close() { await server.stop(true); await receiver.close(); backend.close(); } };
 }
 if (import.meta.main) {
   mkdirSync('.runtime', { recursive: true });
-  const app = startServer({ path: '.runtime/provider.sqlite', port: Number(process.env.PORT ?? 5196) });
+  const app = startServer({ path: '.runtime/provider.sqlite', receiverPath: '.runtime/receiver.sqlite', port: Number(process.env.PORT ?? 5196) });
   console.log(`Commerce Protocol from scratch: ${app.url}`);
   process.on('SIGINT', async () => { await app.close(); process.exit(0); });
   process.on('SIGTERM', async () => { await app.close(); process.exit(0); });

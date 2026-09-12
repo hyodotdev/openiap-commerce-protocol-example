@@ -20,3 +20,5 @@ export function result(operation, body) {
 export class ProtocolFault extends Error {
   constructor(code) { super(code); this.code = code; }
 }
+
+export const knownEvents = bundle.$defs.CommerceEvent.properties.eventType.examples;
