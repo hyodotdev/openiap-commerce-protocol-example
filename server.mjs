@@ -13,11 +13,12 @@ export function startServer({ path = ':memory:', port = 0, receiverPath = ':memo
       const url = new URL(request.url);
       if (url.pathname === '/' && request.method === 'GET') return new Response(Bun.file(new URL('./dashboard.html', import.meta.url)), { headers: { 'Content-Type': 'text/html' } });
       if (url.pathname === '/demo/state' && request.method === 'GET') return Response.json({ ...backend.state(url.searchParams.get('user') === 'bob' ? 'bob' : 'alice'), inbox: receiver.db.query('SELECT count(*) n FROM inbox').get().n });
-      if (['/demo/verify', '/demo/bind', '/demo/cancel', '/demo/deliver', '/demo/expire'].includes(url.pathname) && request.method === 'POST') {
+      if (['/demo/verify', '/demo/bind', '/demo/cancel', '/demo/deliver', '/demo/expire', '/demo/erase'].includes(url.pathname) && request.method === 'POST') {
         if (request.headers.get('origin') && request.headers.get('origin') !== url.origin) return failure('FORBIDDEN');
         let body;
         try { body = await request.json(); } catch { return failure('INVALID_REQUEST'); }
         const userId = body.user === 'bob' ? 'bob' : 'alice';
+        if (backend.erased(userId) && url.pathname !== '/demo/erase') return failure('FORBIDDEN');
         const trace = [];
         async function call(path, input, method = 'POST') {
           const response = await fetch(server.url.origin + path, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${CREDENTIALS.server}` }, ...(method === 'POST' ? { body: JSON.stringify(input) } : {}) });
@@ -35,6 +36,11 @@ export function startServer({ path = ':memory:', port = 0, receiverPath = ':memo
           await call('/fixture/cancel', { userId });
           await call('/commerce/v1/subscriptions/status?userId=' + userId, undefined, 'GET');
         }
+        if (url.pathname === '/demo/erase') {
+          await call('/fixture/erase-receiver', { userId });
+          await call('/commerce/v1/users/erase', { userId });
+          await call('/commerce/v1/entitlements?userId=' + userId, undefined, 'GET');
+        }
         if (url.pathname === '/demo/expire') {
           await call('/fixture/clock', { now: END });
           await call('/commerce/v1/entitlements?userId=' + userId, undefined, 'GET');
@@ -46,12 +52,13 @@ export function startServer({ path = ':memory:', port = 0, receiverPath = ':memo
         }
         return Response.json({ trace });
       }
-      if (['/fixture/cancel', '/fixture/clock', '/fixture/expire'].includes(url.pathname) && request.method === 'POST') {
+      if (['/fixture/cancel', '/fixture/clock', '/fixture/expire', '/fixture/erase-receiver'].includes(url.pathname) && request.method === 'POST') {
         if (request.headers.get('authorization') !== `Bearer ${CREDENTIALS.server}`) return failure('UNAUTHORIZED');
         let input;
         try { input = await request.json(); } catch { return failure('INVALID_REQUEST'); }
         if (url.pathname === '/fixture/clock') return Response.json(backend.setClock(input?.now));
         if (!valid('#/$defs/SubscriptionStatusInput', input)) return failure('INVALID_REQUEST');
+        if (url.pathname === '/fixture/erase-receiver') return Response.json(receiver.erase(input.userId));
         return Response.json(url.pathname === '/fixture/expire' ? backend.expire(input.userId) : backend.cancel(input.userId));
       }
       const operation = manifest.operations.find(op => op.path === url.pathname && op.method === request.method);
@@ -68,6 +75,7 @@ export function startServer({ path = ':memory:', port = 0, receiverPath = ':memo
       } else input = Object.fromEntries(url.searchParams);
       if (operation.input && !valid(operation.input, input)) return failure('INVALID_REQUEST');
       if (operation.name === 'verifyPurchase') return result(operation, backend.verify(input));
+      if (operation.name === 'eraseUser') return result(operation, backend.erase(input.userId));
       if (operation.name === 'bindPurchase') return result(operation, backend.bind(input));
       if (operation.name === 'entitlements') return result(operation, backend.entitlements(input));
       if (operation.name === 'subscriptionStatus') return result(operation, backend.status(input));

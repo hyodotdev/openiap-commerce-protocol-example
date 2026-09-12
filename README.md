@@ -102,3 +102,27 @@ This proves that specific local recovery path, not all operating-system or
 production recovery scenarios.
 
 [Actual process and boundary tests](evidence/06-recovery.json) · [Expiry screen](evidence/06-screen.png)
+
+## Step 7: erase the account
+
+Click **Erase selected test account**. The demo separately erases the app-owned
+receiver inbox and calls `POST /commerce/v1/users/erase` on the provider. Access
+is empty afterward. The provider cannot remove a copy already delivered to
+another service, which is why the caller performs both actions.
+
+Tests cover erasure during an in-flight HTTP delivery, repetition after reopening
+both databases, late signed events, rejected old sessions, retained Bob access,
+and refusal to attach Alice's retired purchase to another account. Tombstones
+are retained as enforcement markers; this is not a claim of forensic database
+scrubbing, backup deletion, or production privacy compliance.
+
+The first portable conformance run failed because the custom fixture store was
+not exercisable by the published 1.0 runner. A Google-shaped fixture adapter was
+then implemented and tested; all earlier tests remain. The descriptor explicitly
+identifies simulated behavior, not a real Google integration. The passing run
+covers the declared REST verification, entitlements, and accountLifecycle
+profiles. Signing vectors and local retry tests are separate from the full
+production events profile; GraphQL and real stores are not claimed.
+
+[Failed run](evidence/07-first-conformance.json) · [Source patch at that failure](evidence/07-first-attempt.patch)
+· [Passing tests](evidence/07-final.json) · [Erasure screen](evidence/07-screen.png)

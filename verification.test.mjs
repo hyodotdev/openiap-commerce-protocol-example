@@ -24,3 +24,17 @@ test('verification accepts evidence without creating ownership, rejects bad evid
     expect(app.backend.state().purchases).toBe(1);
   } finally { await app.close(); }
 });
+
+test('Google-shaped fixtures verify, bind, and preserve the store in tokenless results', async () => {
+  const app=startServer();const input={store:'google',google:{purchaseToken:'fixture-google-alice'}};
+  try {
+    const result=await request(app,'/commerce/v1/purchases/verify',input);
+    expect(result.status).toBe(200);expect(result.body.isValid).toBe(true);
+    expect((await request(app,'/commerce/v1/purchases/bind',{...input,userId:'alice'})).body.bound).toBe(true);
+    const access=app.backend.entitlements({userId:'alice'});
+    expect(access.productIds).toEqual(['premium.monthly']);expect(access.subscriptions[0].store).toBe('google');
+    expect(JSON.stringify(access)).not.toContain('fixture-google-alice');
+    expect((await request(app,'/commerce/v1/purchases/verify',{store:'google',google:{purchaseToken:'invalid'}})).body.isValid).toBe(false);
+    expect((await request(app,'/commerce/v1/purchases/verify',{store:'google',google:{purchaseToken:'fixture-google-outage'}})).status).toBe(502);
+  } finally {await app.close();}
+});

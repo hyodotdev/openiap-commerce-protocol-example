@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual, randomUUID } from 'node:crypto';
 import { Database } from 'bun:sqlite';
 import { valid, knownEvents } from './contract.mjs';
 
@@ -19,6 +19,17 @@ export function classify(status) {
 export function startReceiver({ path = ':memory:', clock = Date.now, port = 0 } = {}) {
   const db = new Database(path, { create: true });
   db.exec("PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS inbox (project_id TEXT NOT NULL, event_id TEXT NOT NULL, user_id TEXT, body TEXT NOT NULL, PRIMARY KEY(project_id,event_id));");
+  db.exec('CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY,value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS erased_users (marker TEXT PRIMARY KEY);');
+  db.query('INSERT OR IGNORE INTO metadata VALUES (?,?)').run('erasure-key', randomUUID());
+  const key = db.query("SELECT value FROM metadata WHERE key='erasure-key'").get().value;
+  const marker = userId => createHmac('sha256', key).update(userId).digest('hex');
+  function erase(userId) {
+    return db.transaction(() => {
+      db.query('INSERT OR IGNORE INTO erased_users VALUES (?)').run(marker(userId));
+      db.query('DELETE FROM inbox WHERE user_id=?').run(userId);
+      return { accepted: true };
+    }).immediate();
+  }
   const state = { failNext: false, loseAckNext: false };
   const server = Bun.serve({ hostname: '127.0.0.1', port, maxRequestBodySize: 65536, async fetch(request) {
     if (request.method !== 'POST' || new URL(request.url).pathname !== '/webhooks/commerce') return new Response(null, { status: 404 });
@@ -34,12 +45,15 @@ export function startReceiver({ path = ':memory:', clock = Date.now, port = 0 } 
     if (!knownEvents.includes(event.eventType)) return new Response(null, { status: 200 });
     if (state.failNext) { state.failNext = false; return new Response(null, { status: 503 }); }
     try {
-      db.query('INSERT OR IGNORE INTO inbox VALUES (?,?,?,?)').run(event.projectId, event.eventId, event.userId ?? null, body.toString('utf8'));
+      db.transaction(() => {
+        if (event.userId && db.query('SELECT marker FROM erased_users WHERE marker=?').get(marker(event.userId))) return;
+        db.query('INSERT OR IGNORE INTO inbox VALUES (?,?,?,?)').run(event.projectId, event.eventId, event.userId ?? null, body.toString('utf8'));
+      }).immediate();
     } catch { return new Response(null, { status: 503 }); }
     if (state.loseAckNext) { state.loseAckNext = false; return new Response(null, { status: 503 }); }
     return new Response(null, { status: 202 });
   }});
-  return { db, state, url: server.url.origin + '/webhooks/commerce', async close() { await server.stop(true); db.close(); } };
+  return { db, state, erase, url: server.url.origin + '/webhooks/commerce', async close() { await server.stop(true); db.close(); } };
 }
 export function createDelivery(backend, destination, { clock = Date.now } = {}) {
   const url = new URL(destination);
@@ -49,6 +63,7 @@ export function createDelivery(backend, destination, { clock = Date.now } = {}) 
     const rows = backend.db.query("SELECT * FROM outbox WHERE status='pending' AND next_attempt<=? ORDER BY rowid").all(clock());
     const trace = [];
     for (const row of rows) {
+      if (!backend.db.query('SELECT id FROM outbox WHERE id=?').get(row.id)) continue;
       const timestamp = Math.floor(clock() / 1000);
       const headers = { 'Content-Type': 'application/json', 'openiap-timestamp': String(timestamp), 'openiap-signature': sign(WEBHOOK_SECRET, timestamp, row.body), 'openiap-event-id': row.id, 'openiap-delivery-id': row.delivery_id };
       let status;
