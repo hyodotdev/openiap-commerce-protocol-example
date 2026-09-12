@@ -1,0 +1,182 @@
+[
+  {
+    "action": "Clean source startup",
+    "recordedAt": "2026-09-12T18:33:38.022Z",
+    "observed": {
+      "access": "Premium is locked",
+      "inbox": "0",
+      "message": "This customer has no current paid access. Verify the receipt, then connect it to Alice.",
+      "notice": "",
+      "purchases": "0",
+      "queued": "0",
+      "scrollWidth": 1265,
+      "trace": "",
+      "width": 1280
+    }
+  },
+  {
+    "action": "Verify sample receipt",
+    "recordedAt": "2026-09-12T18:33:54.851Z",
+    "observed": {
+      "access": "Premium is locked",
+      "inbox": "0",
+      "message": "This customer has no current paid access. Verify the receipt, then connect it to Alice.",
+      "notice": "Receipt checked. Verification alone grants no access.",
+      "purchases": "1",
+      "queued": "0",
+      "scrollWidth": 1265,
+      "trace": "",
+      "width": 1280
+    }
+  },
+  {
+    "action": "Bind Alice",
+    "recordedAt": "2026-09-12T18:33:55.149Z",
+    "observed": {
+      "access": "Premium is open",
+      "inbox": "0",
+      "message": "Premium is open. Cancel renewal to see why paid access continues.",
+      "notice": "Purchase connected. Premium is open.",
+      "purchases": "1",
+      "queued": "1",
+      "scrollWidth": 1265,
+      "trace": "",
+      "width": 1280
+    }
+  },
+  {
+    "action": "Reject Bob claim",
+    "recordedAt": "2026-09-12T18:33:55.450Z",
+    "observed": {
+      "access": "Premium is locked",
+      "inbox": "0",
+      "message": "This customer has no current paid access. Verify the receipt, then connect it to Alice.",
+      "notice": "Premium is locked. Check ownership and the paid period.",
+      "purchases": "1",
+      "queued": "1",
+      "scrollWidth": 1265,
+      "trace": "",
+      "width": 1280
+    }
+  },
+  {
+    "action": "Cancel Alice renewal",
+    "recordedAt": "2026-09-12T18:33:55.751Z",
+    "observed": {
+      "access": "Premium is open",
+      "inbox": "0",
+      "message": "Renewal is canceled. Premium stays open until October 13; the change is queued for delivery.",
+      "notice": "Renewal canceled. Paid access continues.",
+      "purchases": "1",
+      "queued": "2",
+      "scrollWidth": 1265,
+      "trace": "",
+      "width": 1280
+    }
+  },
+  {
+    "action": "Deliver with retry",
+    "recordedAt": "2026-09-12T18:33:56.893Z",
+    "observed": {
+      "access": "Premium is open",
+      "inbox": "2",
+      "message": "Renewal is canceled. Premium stays open until October 13; the change is queued for delivery.",
+      "notice": "Delivery finished: 0 queued, 2 saved in the receiver.",
+      "purchases": "1",
+      "queued": "0",
+      "scrollWidth": 1265,
+      "trace": "",
+      "width": 1280
+    }
+  },
+  {
+    "action": "Reload after clean server restart",
+    "recordedAt": "2026-09-12T18:35:19.022Z",
+    "observed": {
+      "access": "Premium is open",
+      "inbox": "2",
+      "message": "Renewal is canceled. Premium stays open until October 13.",
+      "notice": "",
+      "purchases": "1",
+      "queued": "0",
+      "scrollWidth": 1265,
+      "trace": "",
+      "width": 1280
+    }
+  },
+  {
+    "action": "Mobile paid access",
+    "recordedAt": "2026-09-12T18:35:33.326Z",
+    "observed": {
+      "access": "Premium is open",
+      "inbox": "2",
+      "message": "Renewal is canceled. Premium stays open until October 13.",
+      "notice": "",
+      "purchases": "1",
+      "queued": "0",
+      "scrollWidth": 375,
+      "trace": "",
+      "width": 390
+    }
+  },
+  {
+    "action": "Mobile expiry",
+    "recordedAt": "2026-09-12T18:35:33.637Z",
+    "observed": {
+      "access": "Premium is locked",
+      "inbox": "2",
+      "message": "The paid period has ended. Premium is locked, including after a server restart.",
+      "notice": "The paid period ended. Premium is locked.",
+      "purchases": "1",
+      "queued": "2",
+      "scrollWidth": 375,
+      "trace": "",
+      "width": 390
+    }
+  },
+  {
+    "action": "Mobile expiry delivery",
+    "recordedAt": "2026-09-12T18:35:34.769Z",
+    "observed": {
+      "access": "Premium is locked",
+      "inbox": "4",
+      "message": "The paid period has ended. Premium is locked, including after a server restart.",
+      "notice": "Delivery finished: 0 queued, 4 saved in the receiver.",
+      "purchases": "1",
+      "queued": "0",
+      "scrollWidth": 375,
+      "trace": "",
+      "width": 390
+    }
+  },
+  {
+    "action": "Mobile erasure",
+    "recordedAt": "2026-09-12T18:35:35.067Z",
+    "observed": {
+      "access": "Premium is locked",
+      "inbox": "0",
+      "message": "This test account has been erased. Its old session and purchase can no longer create access.",
+      "notice": "Test account erased. Its old session is blocked.",
+      "purchases": "1",
+      "queued": "0",
+      "scrollWidth": 375,
+      "trace": "",
+      "width": 390
+    }
+  },
+  {
+    "action": "Reload after erasure",
+    "recordedAt": "2026-09-12T18:35:35.108Z",
+    "observed": {
+      "access": "Premium is locked",
+      "inbox": "0",
+      "message": "This test account has been erased. Its old session and purchase can no longer create access.",
+      "notice": "",
+      "purchases": "1",
+      "queued": "0",
+      "scrollWidth": 375,
+      "trace": "",
+      "width": 390
+    }
+  }
+]

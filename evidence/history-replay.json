@@ -1,0 +1,198 @@
+{
+  "recordedAt": "2026-09-12T18:28:40.582Z",
+  "scope": "Each actual commit extracted into an empty directory; no development database or node_modules reused.",
+  "ok": true,
+  "results": [
+    {
+      "revision": "39cdad22713cae5cfa864ce63f4a69c933c51990",
+      "ok": true,
+      "bootstrapOnly": true,
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci"
+          ],
+          "exitCode": 0,
+          "stdout": "\nadded 6 packages, and audited 7 packages in 487ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "revision": "e4b92680c746eee9abecb4da290499d89f118cbd",
+      "ok": true,
+      "bootstrapOnly": false,
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci"
+          ],
+          "exitCode": 0,
+          "stdout": "\nadded 6 packages, and audited 7 packages in 343ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "npm",
+            "test"
+          ],
+          "exitCode": 0,
+          "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+          "stderr": "\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and unfinished discovery [6.94ms]\n\n 1 pass\n 0 fail\n 6 expect() calls\nRan 1 test across 1 file. [89.00ms]\n"
+        }
+      ]
+    },
+    {
+      "revision": "e77b493699bb95b5b8be203135b68484c4b4a92d",
+      "ok": true,
+      "bootstrapOnly": false,
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci"
+          ],
+          "exitCode": 0,
+          "stdout": "\nadded 6 packages, and audited 7 packages in 386ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "npm",
+            "test"
+          ],
+          "exitCode": 0,
+          "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+          "stderr": "\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [9.97ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and unfinished discovery [2.13ms]\n\n 2 pass\n 0 fail\n 19 expect() calls\nRan 2 tests across 2 files. [57.00ms]\n"
+        }
+      ]
+    },
+    {
+      "revision": "6161977a9c79612297c859f414ff366aeebcd0be",
+      "ok": true,
+      "bootstrapOnly": false,
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci"
+          ],
+          "exitCode": 0,
+          "stdout": "\nadded 6 packages, and audited 7 packages in 315ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "npm",
+            "test"
+          ],
+          "exitCode": 0,
+          "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+          "stderr": "\nownership.test.mjs:\n(pass) only server role can bind; concurrent claims select one owner and reads contain no evidence [17.37ms]\n\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [2.18ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and unfinished discovery [2.01ms]\n\n 3 pass\n 0 fail\n 33 expect() calls\nRan 3 tests across 3 files. [66.00ms]\n"
+        }
+      ]
+    },
+    {
+      "revision": "18fcf40579b9161d3ff629574f896be5eeca1151",
+      "ok": true,
+      "bootstrapOnly": false,
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci"
+          ],
+          "exitCode": 0,
+          "stdout": "\nadded 6 packages, and audited 7 packages in 308ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "npm",
+            "test"
+          ],
+          "exitCode": 0,
+          "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+          "stderr": "\nownership.test.mjs:\n(pass) only server role can bind; concurrent claims select one owner and reads contain no evidence [24.76ms]\n\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [2.31ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and unfinished discovery [1.92ms]\n\nlifecycle.test.mjs:\n(pass) cancellation keeps paid access and atomically saves one observation and immutable event [2.21ms]\n\n 4 pass\n 0 fail\n 45 expect() calls\nRan 4 tests across 4 files. [78.00ms]\n"
+        }
+      ]
+    },
+    {
+      "revision": "d1d9a96432624af8369560188c31af334da526d5",
+      "ok": true,
+      "bootstrapOnly": false,
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci"
+          ],
+          "exitCode": 0,
+          "stdout": "\nadded 6 packages, and audited 7 packages in 314ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "npm",
+            "test"
+          ],
+          "exitCode": 0,
+          "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+          "stderr": "\ndelivery.test.mjs:\n(pass) published signature and response vectors pass against the new transport [1.82ms]\n(pass) real HTTP retry and lost acknowledgement retain bytes and IDs, deduplicate, reject tampering, and dead-letter [19.69ms]\n\nownership.test.mjs:\n(pass) only server role can bind; concurrent claims select one owner and reads contain no evidence [8.05ms]\n\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [2.60ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and schema-valid discovery [8.74ms]\n\nlifecycle.test.mjs:\n(pass) cancellation keeps paid access and atomically saves one observation and immutable event [2.56ms]\n\n 6 pass\n 0 fail\n 99 expect() calls\nRan 6 tests across 5 files. [92.00ms]\n"
+        }
+      ]
+    },
+    {
+      "revision": "e697873b605e4b529e9d743d8f090c8935f1e560",
+      "ok": true,
+      "bootstrapOnly": false,
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci"
+          ],
+          "exitCode": 0,
+          "stdout": "\nadded 6 packages, and audited 7 packages in 320ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "npm",
+            "test"
+          ],
+          "exitCode": 0,
+          "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+          "stderr": "\nrecovery.test.mjs:\n(pass) access closes at the exact expiry boundary before the lifecycle observation [18.01ms]\n(pass) separate process survives abrupt termination with pending events, ownership, inbox, and expiry [3321.43ms]\n\ndelivery.test.mjs:\n(pass) published signature and response vectors pass against the new transport [0.91ms]\n(pass) real HTTP retry and lost acknowledgement retain bytes and IDs, deduplicate, reject tampering, and dead-letter [10.27ms]\n\nownership.test.mjs:\n(pass) only server role can bind; concurrent claims select one owner and reads contain no evidence [10.11ms]\n\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [3.63ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and schema-valid discovery [11.60ms]\n\nlifecycle.test.mjs:\n(pass) cancellation keeps paid access and atomically saves one observation and immutable event [2.77ms]\n\n 8 pass\n 0 fail\n 117 expect() calls\nRan 8 tests across 6 files. [3.44s]\n"
+        }
+      ]
+    },
+    {
+      "revision": "e7bd417e80723e9cad3991f5648f2cb6803f3796",
+      "ok": true,
+      "bootstrapOnly": false,
+      "commands": [
+        {
+          "command": [
+            "npm",
+            "ci"
+          ],
+          "exitCode": 0,
+          "stdout": "\nadded 6 packages, and audited 7 packages in 318ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "npm",
+            "test"
+          ],
+          "exitCode": 0,
+          "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n{\n  \"suite\": \"portable-conformance\",\n  \"ok\": true,\n  \"results\": [\n    {\n      \"id\": \"capabilities.version-agreement\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"providerCapabilities.success.contract\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"subscriptionStatus.auth.missing-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"subscriptionStatus.auth.unknown-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"subscriptionStatus.auth.verification-role-refused\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"subscriptionStatus.auth.precedes-validation\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"subscriptionStatus.auth.precedes-structural-validation\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"subscriptionStatus.input.missing-required-member\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"subscriptionStatus.success.contract\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"entitlements.auth.missing-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"entitlements.auth.unknown-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"entitlements.auth.verification-role-refused\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"entitlements.auth.precedes-validation\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"entitlements.auth.precedes-structural-validation\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"entitlements.input.missing-required-member\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"entitlements.success.contract\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"verifyPurchase.auth.missing-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"verifyPurchase.auth.unknown-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"verifyPurchase.input.missing-required-member\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"verifyPurchase.success.contract.google\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"verifyPurchase.input.unknown-member-ignored.google\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"verifyPurchase.idempotent.repeat.google\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.auth.missing-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.auth.unknown-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.auth.verification-role-refused\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.auth.precedes-validation\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.auth.precedes-structural-validation\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.input.missing-required-member\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.success.contract\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.input.unknown-member-ignored\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.idempotent.repeat\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.auth.missing-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.auth.unknown-credential\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.auth.verification-role-refused\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.auth.precedes-validation\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.auth.precedes-structural-validation\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.input.missing-required-member\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.success.contract\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.input.unknown-member-ignored\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"eraseUser.idempotent.repeat\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"verifyPurchase.store.unsupported\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"verifyPurchase.input.mismatched-evidence\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"providerCapabilities.honesty.binding-declared\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"bindPurchase.unknown-evidence.not-bound\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    },\n    {\n      \"id\": \"entitlements.unknown-user.empty\",\n      \"binding\": \"rest\",\n      \"ok\": true,\n      \"failures\": []\n    }\n  ],\n  \"parityFailures\": []\n}\n",
+          "stderr": "\nrecovery.test.mjs:\n(pass) access closes at the exact expiry boundary before the lifecycle observation [18.99ms]\n(pass) separate process survives abrupt termination with pending events, ownership, inbox, and expiry [3307.82ms]\n\ndelivery.test.mjs:\n(pass) published signature and response vectors pass against the new transport [1.09ms]\n(pass) real HTTP retry and lost acknowledgement retain bytes and IDs, deduplicate, reject tampering, and dead-letter [12.03ms]\n\nownership.test.mjs:\n(pass) only server role can bind; concurrent claims select one owner and reads contain no evidence [11.20ms]\n\nconformance.test.mjs:\n(pass) published portable runner verifies the declared REST operation profiles [47.62ms]\n\nerasure.test.mjs:\n(pass) provider and recipient erase independently; late events, stale sessions, and repeated erasure cannot restore Alice [11.60ms]\n(pass) erasure during an in-flight delivery removes both copies and queued follow-ups [3.20ms]\n\nverification.test.mjs:\n(pass) verification accepts evidence without creating ownership, rejects bad evidence, and distinguishes outage [1.92ms]\n(pass) Google-shaped fixtures verify, bind, and preserve the store in tokenless results [2.11ms]\n\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and schema-valid discovery [1.80ms]\n\nlifecycle.test.mjs:\n(pass) cancellation keeps paid access and atomically saves one observation and immutable event [2.18ms]\n\n 12 pass\n 0 fail\n 142 expect() calls\nRan 12 tests across 8 files. [3.48s]\n"
+        }
+      ]
+    }
+  ]
+}

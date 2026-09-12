@@ -1,0 +1,16 @@
+{
+  "kind": "intentional negative control",
+  "mutation": {
+    "file": "backend.mjs",
+    "before": "now() < row.expires_at",
+    "after": "now() <= row.expires_at"
+  },
+  "command": [
+    "bun",
+    "test",
+    "recovery.test.mjs"
+  ],
+  "exitCode": 1,
+  "stdout": "bun test v1.3.13 (bf2e2cec)\n",
+  "stderr": "\nrecovery.test.mjs:\n12 |     await request(app, '/commerce/v1/purchases/verify', receipt);\n13 |     await request(app, '/commerce/v1/purchases/bind', {...receipt,userId:'alice'});\n14 |     app.backend.setClock(END-1);\n15 |     expect(app.backend.state('alice').access).toBe(true);\n16 |     app.backend.setClock(END);\n17 |     expect(app.backend.state('alice').access).toBe(false);\n                                                   ^\nerror: expect(received).toBe(expected)\n\nExpected: false\nReceived: true\n\n      at <anonymous> (/private/var/folders/2r/04zpv09x6ns4kzm7bjkbslqr0000gn/T/commerce-negative-mbupc6zd/recovery.test.mjs:17:47)\n(fail) access closes at the exact expiry boundary before the lifecycle observation [18.90ms]\n49 |     expect((await request(app,'/commerce/v1/purchases/bind',{...receipt,userId:'bob'})).body.bound).toBe(false);\n50 |     await request(app,'/demo/deliver',{});\n51 |     state=await (await fetch(app.url+'/demo/state')).json();expect(state.inbox).toBe(2);expect(state.queued).toBe(0);\n52 |     await request(app,'/fixture/clock',{now:END});\n53 |     child.kill('SIGKILL');await child.exited;app=await start();\n54 |     expect((await (await fetch(app.url+'/demo/state')).json()).access).toBe(false);\n                                                                            ^\nerror: expect(received).toBe(expected)\n\nExpected: false\nReceived: true\n\n      at <anonymous> (/private/var/folders/2r/04zpv09x6ns4kzm7bjkbslqr0000gn/T/commerce-negative-mbupc6zd/recovery.test.mjs:54:72)\n(fail) separate process survives abrupt termination with pending events, ownership, inbox, and expiry [2272.17ms]\n\n 0 pass\n 2 fail\n 10 expect() calls\nRan 2 tests across 1 file. [2.37s]\n"
+}

@@ -1,128 +1,76 @@
-# Commerce Protocol: from an empty folder
+# Commerce Protocol: built with AI from an empty folder
 
-An AI builds a local Premium purchase backend from the published contract,
-then runs each milestone before committing it. Start at the initial commit
-and follow the history to see the input, implementation, failures, and results.
+Run a local Premium purchase backend, then follow the commits that built it.
+The AI read the published contract, wrote the implementation, ran the tests,
+and corrected a conformance failure. Each milestone preserves its real output
+and screenshot. No previous example runtime was copied into this project.
 
-This initial commit contains the captured CLI output, actual docs prompt,
-published build/integration briefs, and installed contract. No backend has
-been implemented yet. `openiap init` printed instructions; it wrote no code.
+## Try the result
 
-Read [the actual AI input](evidence/ai-input.md). This run starts with no
-application source and does not copy the earlier example's implementation.
-The same assistant has prior context: this is not an independent model trial
-or a claim that a single prompt always succeeds. Tests and screenshots will
-be recorded from the code that exists at each milestone.
-
-Runtime choice: Bun 1.3.13, HTTP/JSON, SQLite, a fictional monthly subscription,
-and fictional Alice/Bob sessions. The protocol package supplies schemas,
-bindings, and portable tests. It supplies no running purchase backend.
-
-## Step 1: start the server
+Install Bun (tested with 1.3.13) and Node.js/npm, then run:
 
 ```sh
+git clone --branch codex/commerce-protocol-from-scratch --single-branch https://github.com/hyodotdev/openiap-commerce-protocol-example.git
+cd openiap-commerce-protocol-example
 npm ci
 npm test
 npm start
 ```
 
-Open `http://127.0.0.1:5196`. The server owns an empty SQLite database in
-`.runtime/`. Purchase actions are disabled because they are not implemented.
-Discovery returns `INTERNAL_ERROR` while the provider is incomplete; it does
-not pretend to serve a protocol profile. Next, build purchase verification.
+Open `http://127.0.0.1:5196`. **Verify → connect Alice → cancel renewal → deliver
+→ expire → deliver → erase.** Select Bob after connecting Alice and try to
+claim her purchase: Bob stays locked. Expand the HTTP exchange to see exactly
+which API was called and what it returned.
 
-[Actual test output](evidence/01-server.json) · [Running screen](evidence/01-screen.png)
+Restarting keeps the SQLite databases in `.runtime/`. For a fresh demo, use a
+fresh checkout. `PORT=5197 npm start` selects another port. No payment, account,
+server key, or cloud service setup is needed: every credential is a local fixture.
 
-## Step 2: verify a receipt
+![Actual clean-source result: Premium remains open after cancellation and two events are saved](evidence/final-screen.png)
 
-Click **Verify sample receipt**. The dashboard's server sends
-`POST /commerce/v1/purchases/verify` with the displayed fixture input.
-`isValid: true` saves one purchase; repeating it still saves one.
-Ownership and access are not implemented at this checkpoint.
-The open `fixture` store extension uses `fixture.receipt`; it is not an Apple
-or Google receipt format. `not-a-receipt` returns `isValid: false`, while
-`outage` returns HTTP 502 because no verdict could be obtained.
+## Follow the build
 
-[Actual tests](evidence/02-verification.json) · [Screen and response](evidence/02-screen.png)
+Start with [the exact AI input](evidence/ai-input.md): the CLI output, the
+rendered documentation request, and the user's fresh-history constraints.
+`init` printed instructions and exited with no project changes. The AI wrote
+all application code afterward, with tests and corrections across these commits.
 
-## Step 3: connect the purchase to Alice
+| Commit                | Visible result                                            | Inspect the actual checkpoint                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| --------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0. Initial input      | CLI prints a brief; no application source exists.         | [Code](https://github.com/hyodotdev/openiap-commerce-protocol-example/tree/39cdad22713cae5cfa864ce63f4a69c933c51990) · [Diff](https://github.com/hyodotdev/openiap-commerce-protocol-example/commit/39cdad22713cae5cfa864ce63f4a69c933c51990) · [Run](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/39cdad22713cae5cfa864ce63f4a69c933c51990/evidence/00-install.json)                                                                                                                                                      |
+| 1. Start the server   | HTTP and an empty SQLite database run.                    | [Code](https://github.com/hyodotdev/openiap-commerce-protocol-example/tree/e4b92680c746eee9abecb4da290499d89f118cbd) · [Diff](https://github.com/hyodotdev/openiap-commerce-protocol-example/commit/e4b92680c746eee9abecb4da290499d89f118cbd) · [Run](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/e4b92680c746eee9abecb4da290499d89f118cbd/evidence/01-server.json) · [Screen](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/e4b92680c746eee9abecb4da290499d89f118cbd/evidence/01-screen.png)       |
+| 2. Verify a receipt   | One purchase is saved; no customer owns it.               | [Code](https://github.com/hyodotdev/openiap-commerce-protocol-example/tree/e77b493699bb95b5b8be203135b68484c4b4a92d) · [Diff](https://github.com/hyodotdev/openiap-commerce-protocol-example/commit/e77b493699bb95b5b8be203135b68484c4b4a92d) · [Run](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/e77b493699bb95b5b8be203135b68484c4b4a92d/evidence/02-verification.json) · [Screen](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/e77b493699bb95b5b8be203135b68484c4b4a92d/evidence/02-screen.png) |
+| 3. Connect Alice      | Alice gets Premium; Bob cannot take the purchase.         | [Code](https://github.com/hyodotdev/openiap-commerce-protocol-example/tree/6161977a9c79612297c859f414ff366aeebcd0be) · [Diff](https://github.com/hyodotdev/openiap-commerce-protocol-example/commit/6161977a9c79612297c859f414ff366aeebcd0be) · [Run](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/6161977a9c79612297c859f414ff366aeebcd0be/evidence/03-ownership.json) · [Screen](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/6161977a9c79612297c859f414ff366aeebcd0be/evidence/03-screen.png)    |
+| 4. Cancel renewal     | Paid access stays open; the change is queued.             | [Code](https://github.com/hyodotdev/openiap-commerce-protocol-example/tree/18fcf40579b9161d3ff629574f896be5eeca1151) · [Diff](https://github.com/hyodotdev/openiap-commerce-protocol-example/commit/18fcf40579b9161d3ff629574f896be5eeca1151) · [Run](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/18fcf40579b9161d3ff629574f896be5eeca1151/evidence/04-lifecycle.json) · [Screen](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/18fcf40579b9161d3ff629574f896be5eeca1151/evidence/04-screen.png)    |
+| 5. Deliver events     | 503 is retried; the receiver saves one copy.              | [Code](https://github.com/hyodotdev/openiap-commerce-protocol-example/tree/d1d9a96432624af8369560188c31af334da526d5) · [Diff](https://github.com/hyodotdev/openiap-commerce-protocol-example/commit/d1d9a96432624af8369560188c31af334da526d5) · [Run](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/d1d9a96432624af8369560188c31af334da526d5/evidence/05-delivery.json) · [Screen](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/d1d9a96432624af8369560188c31af334da526d5/evidence/05-screen.png)     |
+| 6. Expire and restart | Access closes on time; state survives process restart.    | [Code](https://github.com/hyodotdev/openiap-commerce-protocol-example/tree/e697873b605e4b529e9d743d8f090c8935f1e560) · [Diff](https://github.com/hyodotdev/openiap-commerce-protocol-example/commit/e697873b605e4b529e9d743d8f090c8935f1e560) · [Run](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/e697873b605e4b529e9d743d8f090c8935f1e560/evidence/06-recovery.json) · [Screen](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/e697873b605e4b529e9d743d8f090c8935f1e560/evidence/06-screen.png)     |
+| 7. Erase the account  | Identity is removed; late requests cannot restore access. | [Code](https://github.com/hyodotdev/openiap-commerce-protocol-example/tree/e7bd417e80723e9cad3991f5648f2cb6803f3796) · [Diff](https://github.com/hyodotdev/openiap-commerce-protocol-example/commit/e7bd417e80723e9cad3991f5648f2cb6803f3796) · [Run](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/e7bd417e80723e9cad3991f5648f2cb6803f3796/evidence/07-final.json) · [Screen](https://github.com/hyodotdev/openiap-commerce-protocol-example/blob/e7bd417e80723e9cad3991f5648f2cb6803f3796/evidence/07-screen.png)        |
 
-Select Alice and click **Connect purchase to customer**. The app-facing fixture
-handler selects the customer, sends `POST /commerce/v1/purchases/bind`, then
-`GET /commerce/v1/entitlements?userId=alice`. `bound: true` and
-`productIds: ["premium.monthly"]` open Premium. Select Bob and repeat: the
-existing ownership stays with Alice and Bob receives no access.
+Each commit was then independently extracted, installed, and tested again:
+[clean-checkout replay](evidence/history-replay.json). Run `node verify-history.mjs`
+to repeat the replay. [Implementation notes](BUILD-NOTES.md) explain the API and
+storage changes in each milestone.
 
-The customer selector is a fictional session switch, not authentication.
-Provider credentials stay in `server.mjs`; the browser calls the demo gateway.
-Tests also race both claims, reject verification-role account access, and check
-that status/entitlement replies contain no receipt.
+## What the verification proves
 
-[Actual tests](evidence/03-ownership.json) · [Working access](evidence/03-screen.png)
+- Local HTTP, SQLite persistence, ownership, cancellation, expiry, delivery,
+  abrupt process restart, and erasure run against the new implementation.
+- The published REST runner passes for the declared verification, entitlements,
+  and accountLifecycle profiles using fictional store evidence. The initial
+  [failed run](evidence/07-first-conformance.json) and
+  [failing source patch](evidence/07-first-attempt.patch) are retained.
+- Two **intentional negative controls** break the ownership guard or expiry
+  boundary in disposable copies. The tests fail in both cases:
+  [ownership](evidence/negative-ownership-guard.json),
+  [expiry](evidence/negative-expiry-boundary.json).
+- [Comparison with the earlier example and IAPKit](evidence/comparison.md)
+  records what was run and what was only read.
 
-## Step 4: cancel renewal, keep paid time
+Store receipts, Alice/Bob sessions, the clock, and Google-shaped tokens are
+fixtures. This does not verify a real store purchase, native SDK checkout,
+Nami integration, revenue reporting, or deployment. Loopback delivery is a local
+exception; the production events profile and GraphQL are not claimed.
 
-Click **Cancel renewal**. `/fixture/cancel` simulates the store observation;
-it is a demo control, not a Commerce Protocol cancellation API. Then the
-server reads `/commerce/v1/subscriptions/status`: `willRenew: false` with
-`active: true`. Cancellation does not remove the time Alice already paid for.
-
-The provider writes the observation, changed purchase, and immutable event in
-one SQLite transaction. An injected write failure rolls all three back. Repeating
-the observation produces no second cancellation event. Delivery is next.
-
-[Actual tests including rollback](evidence/04-lifecycle.json) · [Cancellation result](evidence/04-screen.png)
-
-## Step 5: deliver an event to another server
-
-Click **Deliver queued events**. A separate loopback HTTP receiver deliberately
-returns 503 once; the sender waits for backoff and retries. The response panel
-shows both real attempts, their stable event/delivery IDs, and fresh signatures.
-The receiver inserts the authenticated event into SQLite before acknowledging.
-
-Tests reproduce the published signature vectors, tampering, a lost acknowledgement,
-no duplicate inbox effect, and a four-attempt dead-letter limit. Both HTTP
-servers run locally. Loopback delivery is an explicit fixture exception, so this
-checkpoint does not advertise the production `events` profile.
-
-[Actual tests](evidence/05-delivery.json) · [Delivery screen](evidence/05-screen.png)
-
-## Step 6: expire access and restart
-
-Click **Move to the expiry date**. The demo advances its clock, reads access
-before applying the expiry observation, then records that observation. At the
-exact deadline, `productIds: []` closes Premium; no event delivery is needed
-for the synchronous gate to close.
-
-The process test starts this server in a fresh directory, buys and cancels,
-then sends `SIGKILL` while an event is still pending. A new process reads the
-same databases, retains ownership and inbox entries, and delivers the pending
-event. Another abrupt restart after the clock reaches expiry keeps access off.
-This proves that specific local recovery path, not all operating-system or
-production recovery scenarios.
-
-[Actual process and boundary tests](evidence/06-recovery.json) · [Expiry screen](evidence/06-screen.png)
-
-## Step 7: erase the account
-
-Click **Erase selected test account**. The demo separately erases the app-owned
-receiver inbox and calls `POST /commerce/v1/users/erase` on the provider. Access
-is empty afterward. The provider cannot remove a copy already delivered to
-another service, which is why the caller performs both actions.
-
-Tests cover erasure during an in-flight HTTP delivery, repetition after reopening
-both databases, late signed events, rejected old sessions, retained Bob access,
-and refusal to attach Alice's retired purchase to another account. Tombstones
-are retained as enforcement markers; this is not a claim of forensic database
-scrubbing, backup deletion, or production privacy compliance.
-
-The first portable conformance run failed because the custom fixture store was
-not exercisable by the published 1.0 runner. A Google-shaped fixture adapter was
-then implemented and tested; all earlier tests remain. The descriptor explicitly
-identifies simulated behavior, not a real Google integration. The passing run
-covers the declared REST verification, entitlements, and accountLifecycle
-profiles. Signing vectors and local retry tests are separate from the full
-production events profile; GraphQL and real stores are not claimed.
-
-[Failed run](evidence/07-first-conformance.json) · [Source patch at that failure](evidence/07-first-attempt.patch)
-· [Passing tests](evidence/07-final.json) · [Erasure screen](evidence/07-screen.png)
+This is an iterative implementation by the same AI with prior conversation
+context. It is not an independent model trial or proof that one prompt always
+succeeds. The earlier prototype's history remains separate from this new root.

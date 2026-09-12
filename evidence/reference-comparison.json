@@ -1,0 +1,25 @@
+{
+  "recordedAt": "2026-09-12T18:30:11.349581+00:00",
+  "when": "Only after all seven fresh implementation commits existed",
+  "sourceArchiveSha256": "b4c345ee68f48df6afeb14b9255783780c26dd1ee2332b641ab17bd775987836",
+  "commands": [
+    {
+      "command": [
+        "npm",
+        "ci"
+      ],
+      "exitCode": 0,
+      "stdout": "\nadded 10 packages, and audited 11 packages in 565ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+      "stderr": "npm warn allow-scripts 1 package has install scripts not yet covered by allowScripts:\nnpm warn allow-scripts   fsevents@2.3.2 (install: (install scripts present))\nnpm warn allow-scripts\nnpm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.\n"
+    },
+    {
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun verify.mjs && bun test composition/app-backend.test.mjs composition/receiver.test.mjs composition/purchase-flow.test.mjs composition/experience.test.mjs\n\nCommerce Protocol Example: 229 checks passed. No store or production service contacted.\nbun test v1.3.13 (bf2e2cec)\n",
+      "stderr": "\ncomposition/purchase-flow.test.mjs:\n(pass) denied or malformed fulfillment never reports success or finishes a purchase\n\ncomposition/app-backend.test.mjs:\n(pass) account deletion waits for in-flight fulfillment and retries provider erasure after app restart [62.23ms]\n\ncomposition/experience.test.mjs:\n(pass) paywall outcomes and lifecycle events execute through the running app and provider [20.33ms]\n\ncomposition/receiver.test.mjs:\n(pass) the original SQLite and memory composition remains compatible with the receiver [35.28ms]\n(pass) one inbox scopes event IDs to authenticated emitters, survives upgrade, and discards erased users [3.73ms]\n\n 5 pass\n 0 fail\n 76 expect() calls\nRan 5 tests across 4 files. [174.00ms]\n"
+    }
+  ]
+}

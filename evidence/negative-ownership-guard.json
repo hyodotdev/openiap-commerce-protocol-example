@@ -1,0 +1,16 @@
+{
+  "kind": "intentional negative control",
+  "mutation": {
+    "file": "backend.mjs",
+    "before": "if (!row || (row.user_id && row.user_id !== input.userId))",
+    "after": "if (!row)"
+  },
+  "command": [
+    "bun",
+    "test",
+    "ownership.test.mjs"
+  ],
+  "exitCode": 1,
+  "stdout": "bun test v1.3.13 (bf2e2cec)\n",
+  "stderr": "\nownership.test.mjs:\n 9 |     expect((await request(app, bind, {}, null)).status).toBe(401);\n10 |     expect((await request(app, bind, { userId: 42 }, 'verification')).status).toBe(403);\n11 |     expect((await request(app, bind, { ...receipt, userId: 'alice' })).body.bound).toBe(false);\n12 |     await request(app, '/commerce/v1/purchases/verify', receipt);\n13 |     const claims = await Promise.all(['alice', 'bob'].map(userId => request(app, bind, { ...receipt, userId })));\n14 |     expect(claims.filter(x => x.body.bound)).toHaveLength(1);\n                                                  ^\nerror: expect(received).toHaveLength(expected)\n\nExpected length: 1\nReceived length: 2\n\n      at <anonymous> (/private/var/folders/2r/04zpv09x6ns4kzm7bjkbslqr0000gn/T/commerce-negative-u12m2bgk/ownership.test.mjs:14:46)\n(fail) only server role can bind; concurrent claims select one owner and reads contain no evidence [19.73ms]\n\n 0 pass\n 1 fail\n 4 expect() calls\nRan 1 test across 1 file. [62.00ms]\n"
+}
