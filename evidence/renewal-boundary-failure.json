@@ -1,0 +1,13 @@
+{
+  "time": "2026-09-12T22:04:20.440141+00:00",
+  "command": [
+    "bun",
+    "test",
+    "paywall.test.mjs"
+  ],
+  "baseCommit": "4d458ea4182192766ba2a8dbe66b51061d6161d4",
+  "change": "Added expiry-boundary regression before changing runtime",
+  "exitCode": 1,
+  "stdout": "bun test v1.3.13 (bf2e2cec)\n",
+  "stderr": "\npaywall.test.mjs:\n(pass) paywall purchase, renewal and cancellation join two store fixtures to the same experiment receiver [31.54ms]\n(pass) unsuccessful store results and denied ownership never finish a purchase [3.71ms]\n111 |     expect(app.backend.status({ userId: \"alice-apple\" }).active).toBe(false);\n112 |     expect((await act(app, \"renew\")).status).toBe(200);\n113 |     expect(app.backend.status({ userId: \"alice-apple\" }).active).toBe(true);\n114 |     await act(app, \"deliver\");\n115 |     const report = app.attribution.report();\n116 |     expect(report.events.map((event) => event.eventType)).toEqual([\n                                                                ^\nerror: expect(received).toEqual(expected)\n\n  [\n    \"subscription.started\",\n    \"entitlement.granted\",\n    \"subscription.renewed\",\n-   \"entitlement.granted\",\n  ]\n\n- Expected  - 1\n+ Received  + 0\n\n      at <anonymous> (/Users/crossplatformkorea/Github/hyodotdev/openiap-commerce-protocol-example-fresh/paywall.test.mjs:116:59)\n(fail) a renewal arriving at expiry emits a grant when it reopens access [6.10ms]\n(pass) reporting uses event IDs, preserves currencies and unknowns, and leaves refunds for reconciliation [4.32ms]\n(pass) event-to-experiment joins survive reopening, reject reassignment, and erase with the customer [20.85ms]\n\n 4 pass\n 1 fail\n 56 expect() calls\nRan 5 tests across 1 file. [147.00ms]\n"
+}

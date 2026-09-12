@@ -309,6 +309,8 @@ export function openBackend(path) {
             row.evidence,
           );
           emit("subscription.renewed", renewed, now());
+          if (!snapshot(row).active && snapshot(renewed).active)
+            emit("entitlement.granted", renewed, now());
           return { changed: true };
         })
         .immediate();

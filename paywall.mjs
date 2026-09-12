@@ -1,20 +1,62 @@
 import { PAYWALL_STORES } from "./paywall-fixtures.mjs";
 import { PRODUCT } from "./backend.mjs";
+import { manifest, valid } from "./contract.mjs";
 
 export async function handlePaywall(request, app) {
   const url = new URL(request.url);
+  const stores = app.stores ?? PAYWALL_STORES;
+  const provider = app.provider;
+  const trace = [];
+  async function call(path, body, method = "POST") {
+    const destination = provider.baseUrl + path;
+    const response = await fetch(destination, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${provider.credential}`,
+      },
+      ...(method === "POST" ? { body: JSON.stringify(body) } : {}),
+      redirect: "error",
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = await response.json();
+    trace.push({
+      method,
+      destination,
+      input: body,
+      status: response.status,
+      response: data,
+    });
+    if (!response.ok) throw Error(`Request failed: ${path}`);
+    const operation = manifest.operations.find(
+      (item) =>
+        item.path === new URL(destination).pathname && item.method === method,
+    );
+    if (operation && !valid(operation.result, data))
+      throw Error(`Invalid provider response: ${operation.name}`);
+    return data;
+  }
   if (url.pathname === "/paywall" && request.method === "GET")
     return new Response(Bun.file(new URL("./paywall.html", import.meta.url)), {
       headers: { "Content-Type": "text/html" },
     });
   if (url.pathname === "/paywall/state" && request.method === "GET")
     return Response.json({
-      stores: PAYWALL_STORES.map((sample) => ({
-        id: sample.id,
-        label: sample.label,
-        variant: sample.variant,
-        access: app.backend.status({ userId: sample.userId }).active,
-      })),
+      stores: await Promise.all(
+        stores.map(async (sample) => ({
+          id: sample.id,
+          label: sample.label,
+          variant: sample.variant,
+          access: (
+            await call(
+              "/commerce/v1/entitlements?userId=" +
+                encodeURIComponent(sample.userId),
+              undefined,
+              "GET",
+            )
+          ).productIds.includes(sample.productId ?? PRODUCT),
+        })),
+      ),
       report: app.attribution.report(),
       receiver: app.receiver.url,
     });
@@ -34,31 +76,10 @@ export async function handlePaywall(request, app) {
   } catch {
     return new Response(null, { status: 400 });
   }
-  const sample = PAYWALL_STORES.find((item) => item.id === input?.store);
+  const sample = stores.find((item) => item.id === input?.store);
   if (!sample) return new Response(null, { status: 400 });
-  if (app.backend.erased(sample.userId) || app.receiver.erased(sample.userId))
+  if (app.backend?.erased(sample.userId) || app.receiver.erased(sample.userId))
     return new Response(null, { status: 403 });
-  const trace = [];
-  async function call(path, body, method = "POST") {
-    const response = await fetch(url.origin + path, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${app.serverCredential}`,
-      },
-      ...(method === "POST" ? { body: JSON.stringify(body) } : {}),
-    });
-    const data = await response.json();
-    trace.push({
-      method,
-      destination: url.origin + path,
-      input: body,
-      status: response.status,
-      response: data,
-    });
-    if (!response.ok) throw Error(`Request failed: ${path}`);
-    return data;
-  }
   let result = "completed";
   let finishCalls = 0;
   if (url.pathname === "/paywall/buy") {
@@ -78,16 +99,18 @@ export async function handlePaywall(request, app) {
           userId: sample.userId,
         });
         const access = await call(
-          "/commerce/v1/entitlements?userId=" + sample.userId,
+          "/commerce/v1/entitlements?userId=" +
+            encodeURIComponent(sample.userId),
           undefined,
           "GET",
         );
         result =
-          bound.bound && access.productIds.includes(PRODUCT)
+          bound.bound && access.productIds.includes(sample.productId ?? PRODUCT)
             ? "fulfilled"
             : "failed";
         if (result === "fulfilled") {
-          app.attribution.assign(sample);
+          if (app.assign) app.assign(sample);
+          else app.attribution.assign(sample);
           finishCalls = 1;
         }
       }
@@ -101,7 +124,7 @@ export async function handlePaywall(request, app) {
       { userId: sample.userId },
     );
     await call(
-      "/commerce/v1/entitlements?userId=" + sample.userId,
+      "/commerce/v1/entitlements?userId=" + encodeURIComponent(sample.userId),
       undefined,
       "GET",
     );

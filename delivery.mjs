@@ -48,6 +48,8 @@ export function startReceiver({
   clock = Date.now,
   port = 0,
   onErase = () => {},
+  projectId = "fresh-example",
+  secret = WEBHOOK_SECRET,
 } = {}) {
   const db = new Database(path, { create: true });
   db.exec(
@@ -105,7 +107,7 @@ export function startReceiver({
           body,
           timestamp: request.headers.get("openiap-timestamp"),
           signature: request.headers.get("openiap-signature"),
-          secrets: [WEBHOOK_SECRET],
+          secrets: [secret],
           now: Math.floor(clock() / 1000),
         })
       )
@@ -124,7 +126,7 @@ export function startReceiver({
         return new Response(null, { status: 200 });
       if (!valid("#/$defs/CommerceEvent", event))
         return new Response(null, { status: 400 });
-      if (event.projectId !== "fresh-example")
+      if (event.projectId !== projectId)
         return new Response(null, { status: 403 });
       if (!knownEvents.includes(event.eventType))
         return new Response(null, { status: 200 });

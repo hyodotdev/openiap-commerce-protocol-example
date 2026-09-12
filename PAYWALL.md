@@ -10,7 +10,7 @@ Install Bun and Node.js/npm. In this example's folder:
 
 ```sh
 npm ci
-npm test
+npm run verify
 PORT=5198 npm start
 ```
 
@@ -23,6 +23,14 @@ Open `http://127.0.0.1:5198/paywall`.
 | Cancel renewal → Deliver events | Premium stays open. The known amount remains USD 9.98. |
 | Google fixture → Buy Premium → Deliver events | The same receiver joins the purchase to Onboarding / B. Its amount is unknown, not zero. |
 | Redeliver saved events, for each store | Event count and amounts stay unchanged. |
+
+`npm run verify` runs the CLI handoff for all three roles, the full behavioral
+suite, and the purchase → renewal → cancellation → redelivery flow over HTTP.
+It starts an isolated server, stops it, starts a new process, and checks that
+access, experiment assignments and deduplication survive. Failures exit nonzero;
+actual commands, responses, source hashes and results are saved to
+`.runtime/verification.json`. This command executes existing code; it does not
+launch an AI or implement your project.
 
 Expand the HTTP exchange to inspect the actual destination, request, and response.
 Stop and restart the server: the received events and experiment assignments stay
@@ -43,6 +51,7 @@ signed lifecycle events to our existing customer and experiment mapping.
 Keep unknown amounts unknown, preserve currencies, and deduplicate by event ID
 in the authenticated emitter/project scope. Show cancellation and redelivery.
 Use PAYWALL.md and paywall.test.mjs from the example as acceptance references.
+Run npm run verify in its separate checkout and inspect .runtime/verification.json.
 Run the example separately, then run equivalent checks against OUR changed code.
 Show our running result, commands, failures and corrections, and untested parts.
 ```
@@ -62,7 +71,20 @@ attribution policy. A paywall-only product can leave analytics to another servic
 | Experiment association and reporting | [attribution.mjs](attribution.mjs) | Product-owned join keyed by project, store, environment, purchase chain and bound user. No experiment fields are added to the protocol. |
 | Customer outcomes and failure cases | [paywall.test.mjs](paywall.test.mjs) | Also rejects tampering, handles missing amounts/currencies, preserves mappings on reopen, and erases them with the customer. |
 
-The host's fixture catalog supplies the purchase-chain/account association. In
+The default host fixture catalog supplies the purchase-chain/account association.
+`paywall.mjs` reads access through the configured provider's HTTP API. Configure
+its server-side `provider.baseUrl` and `provider.credential` for another provider;
+keep credentials out of the browser. The receiver accepts one configured
+`projectId` and signing `secret`; use a separate database for each emitter.
+`/fixture/*` controls belong only to the local demo provider.
+
+Some providers omit transaction references. For those events, `assignAccount`
+records an explicit trusted account/store/environment/product assignment.
+The report uses it only when `originalTransactionId` is absent. An unknown
+nonempty chain never falls back to an account match. It does not invent IDs.
+Both policies keep the first assignment and remove it when the customer is erased.
+
+The host's fixture catalog supplies the default purchase-chain/account association. In
 your product, derive that association from authenticated purchase records; never
 trust an experiment or customer identifier merely because the client sent it.
 This sample fixes the first assignment for one subscription chain. Your product
@@ -83,15 +105,36 @@ Refunds and recoveries are marked for reconciliation; the event's price is not a
 refund amount. These totals are fictional gross observations, not net revenue,
 MRR, ARPU, a refund ledger, or complete financial reporting.
 
-## Compare an independent implementation
+## Verify an independent provider
 
-IAPKit's [payload builder](https://github.com/hyodotdev/openiap/blob/main/packages/kit/convex/commerce/deliveryState.ts),
-[schema checks](https://github.com/hyodotdev/openiap/blob/main/packages/kit/convex/commerce/spec.conformance.test.ts),
-and [delivery checks](https://github.com/hyodotdev/openiap/blob/main/packages/kit/convex/commerce/delivery.test.ts)
-cover the equivalent envelope, missing-price and delivery boundaries. It uses
-store adapters, tenant credentials, and production delivery machinery. This
-extension reuses the small local backend and receiver. Those source references
-are a comparison, not a new execution or provider-swapping result.
+The same `paywall.mjs`, `delivery.mjs` and `attribution.mjs` also have a provider
+check in [verify-provider.mjs](verify-provider.mjs). The OpenIAP local IAPKit
+harness supplies its real HTTP routes, Convex functions, RTDN normalizer and
+outbound signer. Google responses and OIDC remain fixtures. No hosted account
+or production write is involved.
+
+That run buys, renews, cancels and redelivers through the configured IAPKit
+provider. Its Google events omit transaction references: the explicitly
+configured account/product association joins them to Onboarding / A. Two
+fictional USD 5.00 observations produce USD 10.00. This verifies the second
+provider's actual output, without changing the consumer code or rewriting events.
+It does not migrate purchases from one provider to another.
+
+Run the OpenIAP harness with this checkout as its optional final argument; the original
+example checkout is still required for the existing regression matrix:
+
+```sh
+# From an OpenIAP checkout with dependencies installed, using a new output path:
+bun --conditions=openiap-source packages/kit/scripts/docs/run-commerce-interop.mjs \
+  ../openiap-commerce-protocol-example /tmp/commerce-provider-run \
+  ../openiap-commerce-protocol-example-fresh
+```
+
+The output's `report.json` contains `freshConnection` with the actual requests,
+signed bodies, returned access and experiment results. It also records the
+runtime and source hashes. A default OpenIAP checkout must contain the updated
+harness with the optional fresh-example argument; use the harness source linked in the
+recorded evidence when reproducing an unpublished docs change.
 
 ## Verification scope
 
@@ -106,3 +149,15 @@ The first full run caught an invalid capability declaration. The
 [failed output](evidence/paywall-first-run.json) is retained; the declaration was
 corrected without dropping a test or profile. [Final test output](evidence/paywall-tests.json)
 includes the original regression suite and the new connection tests.
+
+## Acceptance checklist for your implementation
+
+| Requirement | Executable reference | What still belongs to your project |
+| --- | --- | --- |
+| CLI output → AI chat → changed code | `npm run verify`: cli-handoff | The AI must run equivalent checks on your changed code. |
+| Preserve paywall and purchase outcomes | `paywall.test.mjs`: unsuccessful results and ownership | Your real host SDK callback and durable fulfillment. |
+| Purchases and renewals reach experiment data | `paywall.test.mjs`: two store fixtures and account attribution | Authenticated identity, assignment window and experiment policy. |
+| Backend choice uses the same consumer code | `verify-provider.mjs` through the IAPKit harness | Store credentials, provisioning and any purchase migration. |
+| Cancellation and expiry keep access correct | `lifecycle.test.mjs`, expiry-boundary renewal test | Real store lifecycle and device sandbox tests. |
+| Signatures, retries, restart and erasure | `delivery.test.mjs`, `recovery.test.mjs`, `erasure.test.mjs`, `npm run verify` | Public HTTPS deployment and operational monitoring. |
+| Unknown amounts and currencies are honest | `paywall.test.mjs`: reporting | Refund reconciliation, taxes, conversion and financial reporting. |

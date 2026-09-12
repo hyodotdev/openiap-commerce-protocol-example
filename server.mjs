@@ -42,7 +42,10 @@ export function startServer({
             receiver,
             delivery,
             attribution,
-            serverCredential: CREDENTIALS.server,
+            provider: {
+              baseUrl: server.url.origin,
+              credential: CREDENTIALS.server,
+            },
           });
         if (url.pathname === "/" && request.method === "GET")
           return new Response(

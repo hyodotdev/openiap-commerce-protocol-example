@@ -80,3 +80,6 @@ exception; the production events profile and GraphQL are not claimed.
 This is an iterative implementation by the same AI with prior conversation
 context. It is not an independent model trial or proof that one prompt always
 succeeds. The earlier prototype's history remains separate from this new root.
+
+Run `npm run verify` for a repeatable CLI, test, HTTP and process-restart check.
+The report is written to `.runtime/verification.json`; a failed check exits nonzero.

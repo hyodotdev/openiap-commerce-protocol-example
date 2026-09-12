@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "bun server.mjs",
-    "test": "bun test"
+    "test": "bun test",
+    "verify": "node verify.mjs"
   },
   "dependencies": {
     "@hyodotdev/openiap-commerce-protocol": "0.1.0",
