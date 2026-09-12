@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "f0be6a1857ba0ab1b369a56354aca9e7d7a72fec",
+  "command": [
+    "bun",
+    "test",
+    "paywall.test.mjs",
+    "--test-name-pattern",
+    "malformed provider"
+  ],
+  "exitCode": 1,
+  "stdout": "bun test v1.3.13 (bf2e2cec)\n",
+  "stderr": "\npaywall.test.mjs:\n132 |       const response = await fetch(app.url.origin + \"/paywall/buy\", {\n133 |         method: \"POST\",\n134 |         headers: { \"Content-Type\": \"application/json\" },\n135 |         body: JSON.stringify({ store: \"apple\" }),\n136 |       });\n137 |       expect(response.status).toBe(502);\n                                    ^\nerror: expect(received).toBe(expected)\n\nExpected: 502\nReceived: 200\n\n      at <anonymous> (/Users/crossplatformkorea/Github/hyodotdev/openiap-commerce-protocol-example-fresh/paywall.test.mjs:137:31)\n(fail) malformed provider success responses cannot fulfill or assign a purchase [14.12ms]\n\n 0 pass\n 6 filtered out\n 1 fail\n 10 expect() calls\nRan 1 test across 1 file. [68.00ms]\n",
+  "scope": "Trailing-slash regression added before runtime fix."
+}

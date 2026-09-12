@@ -78,6 +78,7 @@ for (const file of ["paywall-screen.jpg", "paywall-mobile.jpg"])
   writeFileSync(join(root, file), read("evidence/" + file));
 const guide = read("PAYWALL.md")
   .toString()
+  .replace("[Final test output]", "[Initial connection test output]")
   .replace(
     /(!?\[[^\]]*\])\((?!https?:|#)([^)]+)\)/g,
     (_, label, path) => `${label}(${repository}/blob/${sourceCommit}/${path})`,
@@ -88,7 +89,7 @@ writeFileSync(
     `\nVerified source: [${sourceCommit}](${repository}/tree/${sourceCommit}).\n` +
     "[Recorded CLI, tests, HTTP and restart results](./paywall-harness.json).\n" +
     (providerFile
-      ? "[Independent provider run](./paywall-provider-run.json). For the local IAPKit check, follow the `reproduction` field: it pins the OpenIAP checkout and links the harness patch.\n"
+      ? "[Independent provider run](./paywall-provider-run.json) · [Exact sources and commands to reproduce it](./paywall-provider-reproduction.md).\n"
       : ""),
 );
 console.log(`Exported verified connection at ${sourceCommit}`);

@@ -80,65 +80,72 @@ test("paywall purchase, renewal and cancellation join two store fixtures to the 
 });
 
 test("malformed provider success responses cannot fulfill or assign a purchase", async () => {
-  for (const invalid of ["verify", "bind", "entitlements"]) {
-    let assignments = 0;
-    const paths = [];
-    const provider = Bun.serve({
-      hostname: "127.0.0.1",
-      port: 0,
-      fetch(request) {
-        const path = new URL(request.url).pathname;
-        paths.push(path);
-        if (path.endsWith("/verify"))
-          return Response.json(
-            invalid === "verify"
-              ? { isValid: "false" }
-              : {
-                  store: "apple",
-                  isValid: true,
-                  state: "ENTITLED",
-                  productId: "premium.monthly",
-                  environment: "sandbox",
-                },
-          );
-        if (path.endsWith("/bind"))
-          return Response.json(
-            invalid === "bind" ? { bound: "false" } : { bound: true },
-          );
-        return Response.json({ productIds: "premium.monthly" });
-      },
-    });
-    const app = Bun.serve({
-      hostname: "127.0.0.1",
-      port: 0,
-      async fetch(request) {
-        try {
-          return await handlePaywall(request, {
-            provider: { baseUrl: provider.url.origin, credential: "fixture" },
-            receiver: { erased: () => false },
-            attribution: {
-              assign: () => {
-                assignments++;
-              },
-            },
-          });
-        } catch {
-          return new Response(null, { status: 502 });
-        }
-      },
-    });
-    try {
-      const response = await fetch(app.url.origin + "/paywall/buy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ store: "apple" }),
+  for (const trailingSlash of [false, true]) {
+    for (const invalid of ["verify", "bind", "entitlements"]) {
+      let assignments = 0;
+      const paths = [];
+      const provider = Bun.serve({
+        hostname: "127.0.0.1",
+        port: 0,
+        fetch(request) {
+          const path = new URL(request.url).pathname;
+          paths.push(path);
+          if (path.endsWith("/verify"))
+            return Response.json(
+              invalid === "verify"
+                ? { isValid: "false" }
+                : {
+                    store: "apple",
+                    isValid: true,
+                    state: "ENTITLED",
+                    productId: "premium.monthly",
+                    environment: "sandbox",
+                  },
+            );
+          if (path.endsWith("/bind"))
+            return Response.json(
+              invalid === "bind" ? { bound: "false" } : { bound: true },
+            );
+          return Response.json({ productIds: "premium.monthly" });
+        },
       });
-      expect(response.status).toBe(502);
-      expect(assignments).toBe(0);
-      expect(paths.at(-1)).toEndWith("/" + invalid);
-    } finally {
-      await app.stop(true);
-      await provider.stop(true);
+      const app = Bun.serve({
+        hostname: "127.0.0.1",
+        port: 0,
+        async fetch(request) {
+          try {
+            return await handlePaywall(request, {
+              provider: {
+                baseUrl: trailingSlash
+                  ? provider.url.href
+                  : provider.url.origin,
+                credential: "fixture",
+              },
+              receiver: { erased: () => false },
+              attribution: {
+                assign: () => {
+                  assignments++;
+                },
+              },
+            });
+          } catch {
+            return new Response(null, { status: 502 });
+          }
+        },
+      });
+      try {
+        const response = await fetch(app.url.origin + "/paywall/buy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ store: "apple" }),
+        });
+        expect(response.status).toBe(502);
+        expect(assignments).toBe(0);
+        expect(paths.at(-1)).toEndWith("/" + invalid);
+      } finally {
+        await app.stop(true);
+        await provider.stop(true);
+      }
     }
   }
 });

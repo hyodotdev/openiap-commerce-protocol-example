@@ -18,3 +18,8 @@ The follow-up adds those checks, fails closed on malformed responses, and uses
 IAPKit's existing local harness for a second provider. The store responses,
 identity and money remain fixtures. The updated documentation separates the
 seven-step backend source, the paywall connection source and older bridge files.
+
+Independent review then reproduced a trailing-slash provider URL bypass and
+found that replay checks did not assert acknowledgement status. Normalize request
+URLs, validate the known protocol operation, test both base URL forms, and record
+successful replay acknowledgements before claiming deduplication.

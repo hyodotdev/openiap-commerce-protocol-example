@@ -84,8 +84,7 @@ The report uses it only when `originalTransactionId` is absent. An unknown
 nonempty chain never falls back to an account match. It does not invent IDs.
 Both policies keep the first assignment and remove it when the customer is erased.
 
-The host's fixture catalog supplies the default purchase-chain/account association. In
-your product, derive that association from authenticated purchase records; never
+In your product, derive the purchase-chain/account association from authenticated purchase records; never
 trust an experiment or customer identifier merely because the client sent it.
 This sample fixes the first assignment for one subscription chain. Your product
 chooses its attribution window, cross-device identity and experiment policy.
@@ -147,14 +146,14 @@ It does not add a production events-profile or GraphQL conformance claim.
 
 The first full run caught an invalid capability declaration. The
 [failed output](evidence/paywall-first-run.json) is retained; the declaration was
-corrected without dropping a test or profile. [Final test output](evidence/paywall-tests.json)
+corrected without dropping a test or profile. [Initial connection test output](evidence/paywall-tests.json)
 includes the original regression suite and the new connection tests.
 
 ## Acceptance checklist for your implementation
 
 | Requirement | Executable reference | What still belongs to your project |
 | --- | --- | --- |
-| CLI output → AI chat → changed code | `npm run verify`: cli-handoff | The AI must run equivalent checks on your changed code. |
+| CLI prepares the AI brief | `npm run verify`: cli-handoff | The AI must run equivalent checks on your changed code. |
 | Preserve paywall and purchase outcomes | `paywall.test.mjs`: unsuccessful results and ownership | Your real host SDK callback and durable fulfillment. |
 | Purchases and renewals reach experiment data | `paywall.test.mjs`: two store fixtures and account attribution | Authenticated identity, assignment window and experiment policy. |
 | Backend choice uses the same consumer code | `verify-provider.mjs` through the IAPKit harness | Store credentials, provisioning and any purchase migration. |

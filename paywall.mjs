@@ -8,7 +8,7 @@ export async function handlePaywall(request, app) {
   const provider = app.provider;
   const trace = [];
   async function call(path, body, method = "POST") {
-    const destination = provider.baseUrl + path;
+    const destination = new URL(path, provider.baseUrl).href;
     const response = await fetch(destination, {
       method,
       headers: {
@@ -29,11 +29,13 @@ export async function handlePaywall(request, app) {
     });
     if (!response.ok) throw Error(`Request failed: ${path}`);
     const operation = manifest.operations.find(
-      (item) =>
-        item.path === new URL(destination).pathname && item.method === method,
+      (item) => item.path === path.split("?")[0] && item.method === method,
     );
-    if (operation && !valid(operation.result, data))
-      throw Error(`Invalid provider response: ${operation.name}`);
+    if (
+      path.startsWith("/commerce/") &&
+      (!operation || !valid(operation.result, data))
+    )
+      throw Error(`Invalid provider response: ${path}`);
     return data;
   }
   if (url.pathname === "/paywall" && request.method === "GET")

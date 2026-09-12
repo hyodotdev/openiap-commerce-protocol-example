@@ -20,6 +20,7 @@ export async function verifyProvider({
   const attribution = openAttribution(receiver.db, { projectId });
   const trace = [],
     deliveries = [],
+    replays = [],
     checks = [];
   const app = Bun.serve({
     hostname: "127.0.0.1",
@@ -83,7 +84,7 @@ export async function verifyProvider({
     check(
       "actual requests target the configured provider",
       bought.trace.map((item) => new URL(item.destination).origin),
-      Array(3).fill(provider.baseUrl),
+      Array(3).fill(new URL(provider.baseUrl).origin),
     );
     check(
       "verification and binding alone create no consumer events",
@@ -128,12 +129,23 @@ export async function verifyProvider({
       state.stores[0].access,
       true,
     );
-    for (const delivery of [...deliveries])
-      await fetch(receiver.url, {
+    for (const delivery of deliveries) {
+      const response = await fetch(receiver.url, {
         method: "POST",
         headers: delivery.headers,
         body: delivery.body,
       });
+      replays.push({
+        eventId: JSON.parse(delivery.body).eventId,
+        status: response.status,
+      });
+      assert(response.ok, `Signed replay was rejected: ${response.status}`);
+    }
+    check(
+      "every signed replay is acknowledged",
+      replays.length,
+      deliveries.length,
+    );
     check(
       "repeated signed delivery leaves report unchanged",
       attribution.report(),
@@ -150,6 +162,7 @@ export async function verifyProvider({
       checks,
       trace,
       deliveries,
+      replays,
       state,
       scope:
         "Same paywall handler and receiver, configured for a second local provider. Trusted account/product attribution is explicit; no purchase migration or real store checkout.",
