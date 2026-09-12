@@ -1,0 +1,47 @@
+[
+  {
+    "command": [
+      "git",
+      "clone",
+      "--branch",
+      "codex/commerce-protocol-from-scratch",
+      "--single-branch",
+      "https://github.com/hyodotdev/openiap-commerce-protocol-example.git",
+      "fresh"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "Cloning into 'fresh'...\n"
+  },
+  {
+    "command": [
+      "git",
+      "checkout",
+      "6d5e5e9a3d3aaae449679780bf014e469c38d900"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "Note: switching to '6d5e5e9a3d3aaae449679780bf014e469c38d900'.\n\nYou are in 'detached HEAD' state. You can look around, make experimental\nchanges and commit them, and you can discard any commits you make in this\nstate without impacting any branches by switching back to a branch.\n\nIf you want to create a new branch to retain commits you create, you may\ndo so (now or later) by using -c with the switch command. Example:\n\n  git switch -c <new-branch-name>\n\nOr undo this operation with:\n\n  git switch -\n\nTurn off this advice by setting config variable advice.detachedHead to false\n\nHEAD is now at 6d5e5e9 fix: require secure provider URLs before sending credentials\n"
+  },
+  {
+    "command": [
+      "npm",
+      "ci"
+    ],
+    "exitCode": 0,
+    "stdout": "\nadded 6 packages, and audited 7 packages in 454ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "verify",
+      "--",
+      "/var/folders/2r/04zpv09x6ns4kzm7bjkbslqr0000gn/T/commerce-https-public-1ze6vogy/verification.json"
+    ],
+    "exitCode": 0,
+    "stdout": "\n> openiap-commerce-protocol-example@0.0.0 verify\n> node verify.mjs /var/folders/2r/04zpv09x6ns4kzm7bjkbslqr0000gn/T/commerce-https-public-1ze6vogy/verification.json\n\nPASS cli-handoff: Three roles print AI instructions without changing project files\nPASS regressions: Behavioral tests and declared REST profile cases pass\nPASS purchase-outcomes: Pending, canceled and failed purchases leave Premium locked\nPASS purchase-renewal-cancel: A has USD 9.98 in fictional observations and retains paid access after cancel\nPASS shared-receiver: Both stores reach the same receiver; B's missing amount stays unknown\nPASS redelivery: Repeated deliveries change neither counts nor amounts\nPASS process-restart: A new server process preserves access, assignments and event deduplication\nPASS source-stability: Source files and revision stayed unchanged throughout execution\nVerification passed: /var/folders/2r/04zpv09x6ns4kzm7bjkbslqr0000gn/T/commerce-https-public-1ze6vogy/verification.json\n",
+    "stderr": ""
+  }
+]
