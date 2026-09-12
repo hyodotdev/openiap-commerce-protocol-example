@@ -1,0 +1,137 @@
+{
+  "kind": "Actual browser operation of the locally implemented extension; not a human study",
+  "steps": [
+    {
+      "step": "pending",
+      "state": {
+        "access": "Premium locked",
+        "events": "0",
+        "notice": "Purchase result: pending. Finish callbacks: 0. Deliver events to update analytics.",
+        "totals": "Variant A · No known amountVariant B · No known amount"
+      }
+    },
+    {
+      "step": "buy",
+      "state": {
+        "access": "Premium open",
+        "events": "0",
+        "notice": "Purchase result: fulfilled. Finish callbacks: 1. Deliver events to update analytics.",
+        "trace": {
+          "finishCalls": 1,
+          "result": "fulfilled",
+          "trace": [
+            {
+              "destination": "http://127.0.0.1:5198/commerce/v1/purchases/verify",
+              "input": {
+                "apple": {
+                  "jws": "fixture.apple.premium"
+                },
+                "store": "apple"
+              },
+              "method": "POST",
+              "response": {
+                "environment": "sandbox",
+                "isValid": true,
+                "productId": "premium.monthly",
+                "state": "ENTITLED",
+                "store": "apple"
+              },
+              "status": 200
+            },
+            {
+              "destination": "http://127.0.0.1:5198/commerce/v1/purchases/bind",
+              "input": {
+                "apple": {
+                  "jws": "fixture.apple.premium"
+                },
+                "store": "apple",
+                "userId": "alice-apple"
+              },
+              "method": "POST",
+              "response": {
+                "bound": true
+              },
+              "status": 200
+            },
+            {
+              "destination": "http://127.0.0.1:5198/commerce/v1/entitlements?userId=alice-apple",
+              "method": "GET",
+              "response": {
+                "productIds": [
+                  "premium.monthly"
+                ],
+                "subscriptions": [
+                  {
+                    "active": true,
+                    "expiresAt": 1791849600000,
+                    "productId": "premium.monthly",
+                    "state": "Active",
+                    "store": "apple",
+                    "willRenew": true
+                  }
+                ],
+                "userId": "alice-apple"
+              },
+              "status": 200
+            }
+          ]
+        }
+      }
+    },
+    {
+      "step": "deliver purchase",
+      "state": {
+        "events": "2",
+        "totals": "Variant A · $4.99Variant B · No known amount"
+      }
+    },
+    {
+      "step": "renew and deliver",
+      "state": {
+        "events": "3",
+        "totals": "Variant A · $9.98Variant B · No known amount"
+      }
+    },
+    {
+      "step": "cancel and deliver",
+      "state": {
+        "access": "Premium open",
+        "events": "4",
+        "totals": "Variant A · $9.98Variant B · No known amount"
+      }
+    },
+    {
+      "step": "redeliver apple",
+      "state": {
+        "events": "4",
+        "totals": "Variant A · $9.98Variant B · No known amount"
+      }
+    },
+    {
+      "step": "google purchase",
+      "state": {
+        "access": "Premium open",
+        "events": "6",
+        "totals": "Variant A · $9.98Variant B · No known amount · 1 unknown",
+        "unknown": "1"
+      }
+    },
+    {
+      "step": "redeliver google",
+      "state": {
+        "events": "6",
+        "totals": "Variant A · $9.98Variant B · No known amount · 1 unknown",
+        "unknown": "1"
+      }
+    },
+    {
+      "step": "mobile rendering",
+      "state": {
+        "bodyWidth": 375,
+        "events": "6",
+        "totals": "Variant A · $9.98Variant B · No known amount · 1 unknown",
+        "width": 390
+      }
+    }
+  ]
+}

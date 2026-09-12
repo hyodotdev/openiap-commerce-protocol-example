@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>From paywall to experiment data · Commerce Protocol</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, system-ui, sans-serif;
+      color: #e9ede8;
+      background: #0f1411;
+      font-size: 15px;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      max-width: 1240px;
+      margin: auto;
+      padding: 36px 24px;
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 38px);
+      letter-spacing: -1px;
+      margin: 12px 0;
+    }
+    h2 {
+      font-size: 20px;
+      margin: 12px 0;
+    }
+    h3 {
+      font-size: 16px;
+    }
+    p {
+      line-height: 1.6;
+      color: #b2bdb4;
+    }
+    a {
+      color: #bed9a6;
+    }
+    button,
+    select {
+      font: inherit;
+      border: 1px solid #52634f;
+      border-radius: 8px;
+      background: #263226;
+      color: inherit;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 2px solid #c3e5a7;
+      outline-offset: 4px;
+    }
+    .primary {
+      background: #bfd6a8;
+      color: #102015;
+      border: 0;
+      font-weight: 650;
+    }
+    .badge {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #bed9a6;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 24px 0;
+    }
+    .tabs [aria-pressed="true"] {
+      border-color: #c1d8ad;
+      background: #394932;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.25fr;
+      gap: 16px;
+    }
+    .card {
+      min-width: 0;
+      border: 1px solid #37453a;
+      border-radius: 16px;
+      padding: 22px;
+      background: #1a241d;
+    }
+    .number {
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      background: #384832;
+      border-radius: 50%;
+      margin-right: 8px;
+      color: #d6e8c6;
+    }
+    .status {
+      font-size: 24px;
+      display: block;
+      margin: 20px 0 8px;
+      color: #d6e8c6;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0;
+    }
+    .muted {
+      font-size: 12px;
+      color: #a2b1a5;
+      overflow-wrap: anywhere;
+    }
+    .facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      border-top: 1px solid #3c493e;
+      padding-top: 12px;
+    }
+    .facts strong {
+      display: block;
+      font-size: 23px;
+      color: #e2eedd;
+    }
+    .events {
+      margin-top: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    th,
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #37453a;
+      overflow-wrap: anywhere;
+    }
+    th {
+      color: #afc4a5;
+    }
+    td {
+      max-width: 230px;
+    }
+    .scroll {
+      overflow: auto;
+    }
+    summary {
+      cursor: pointer;
+      padding: 16px 0;
+    }
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 12px;
+      background: #0f1711;
+      padding: 18px;
+      border-radius: 8px;
+      max-height: 420px;
+      overflow: auto;
+    }
+    #notice {
+      min-height: 1.6em;
+      color: #d6e8c6;
+    }
+    select {
+      max-width: 100%;
+      margin-bottom: 10px;
+    }
+    footer {
+      margin-top: 24px;
+      padding-top: 12px;
+      border-top: 1px solid #37453a;
+    }
+    strong {
+      color: #e2eedd;
+    }
+    @media (max-width: 800px) {
+      body {
+        padding: 24px 16px;
+      }
+      .flow {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 18px;
+      }
+      table {
+        min-width: 650px;
+      }
+    }
+  </style>
+  <header>
+    <span class="badge"
+      >Runnable example · fictional store data · real HTTP + SQLite</span
+    >
+    <h1>Your paywall. One event connection.</h1>
+    <p>
+      Buy Premium, deliver the update, and see which experiment it belongs to.
+      Then change stores: the receiver stays the same.
+    </p>
+  </header>
+  <nav class="tabs" aria-label="Store fixture">
+    <button data-store="apple" aria-pressed="true">
+      Apple fixture · Variant A</button
+    ><button data-store="google" aria-pressed="false">
+      Google fixture · Variant B
+    </button>
+  </nav>
+  <main>
+    <div class="flow">
+      <section class="card">
+        <span class="badge"
+          ><span class="number">1</span>Your existing paywall</span
+        >
+        <h2>Premium monthly</h2>
+        <p id="assignment"></p>
+        <label for="outcome" class="muted">Simulated store result</label
+        ><br /><select id="outcome">
+          <option value="success">Successful purchase</option>
+          <option value="pending">Pending</option>
+          <option value="canceled">Customer cancels</option>
+          <option value="failed">Store fails</option></select
+        ><br /><button class="primary" data-action="buy">Buy Premium →</button>
+        <p class="muted">
+          The host checks the purchase and access before its simulated finish
+          callback.
+        </p>
+      </section>
+      <section class="card">
+        <span class="badge"><span class="number">2</span>Purchase backend</span
+        ><strong class="status" id="access">Premium locked</strong>
+        <p>
+          Verify → connect customer → read access. Subscription changes wait for
+          delivery.
+        </p>
+        <button class="primary" data-action="deliver">Deliver events →</button>
+        <p class="muted">
+          Signed HTTP destination<br /><span id="receiver"></span>
+        </p>
+      </section>
+      <section class="card">
+        <span class="badge"
+          ><span class="number">3</span>Your analytics service</span
+        >
+        <h2>Onboarding experiment</h2>
+        <div id="totals"></div>
+        <div class="facts">
+          <div>
+            <strong id="received">0</strong
+            ><span class="muted">events saved</span>
+          </div>
+          <div>
+            <strong id="unknown">0</strong
+            ><span class="muted">amounts unknown</span>
+          </div>
+        </div>
+        <p class="muted">
+          Known purchase amounts are fictional gross observations, not net
+          revenue or MRR. Cancellation adds no charge.
+        </p>
+      </section>
+    </div>
+    <div class="actions">
+      <button data-action="renew">Simulate renewal</button
+      ><button data-action="cancel">Cancel renewal</button
+      ><button data-action="redeliver">Redeliver saved events</button>
+    </div>
+    <p id="notice" role="status" aria-live="polite">
+      Start with Buy Premium, then Deliver events.
+    </p>
+    <section class="card events">
+      <h2>What arrived in your service</h2>
+      <p class="muted">
+        The service joins the event’s purchase chain to the experiment
+        assignment kept by your app.
+      </p>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Store</th>
+              <th>Experiment</th>
+              <th>Transaction</th>
+              <th>Amount treatment</th>
+            </tr>
+          </thead>
+          <tbody id="events"></tbody>
+        </table>
+      </div>
+    </section>
+    <details>
+      <summary>
+        Inspect the last action: actual HTTP requests and responses
+      </summary>
+      <pre id="trace">No requests yet.</pre>
+    </details>
+    <footer>
+      <p class="muted">
+        Apple and Google here are simulated adapters. No real store purchase,
+        payment, or external analytics service is connected. Both send the same
+        Commerce Protocol envelope to one receiver. Experiment assignment and
+        reporting policy belong to this sample host app.
+      </p>
+      <a href="/">Backend build walkthrough →</a>
+    </footer>
+  </main>
+  <script type="module">
+    let store = "apple";
+    const text = (id, value) => {
+      document.getElementById(id).textContent = value;
+    };
+    async function refresh() {
+      const response = await fetch("/paywall/state");
+      if (!response.ok) throw Error("Cannot read current state");
+      const { stores, report, receiver } = await response.json();
+      const current = stores.find((item) => item.id === store);
+      text("assignment", `${current.label} · Onboarding / ${current.variant}`);
+      text("access", current.access ? "Premium open" : "Premium locked");
+      text("receiver", receiver);
+      text("received", report.events.length);
+      text("unknown", report.unknownAmounts);
+      for (const button of document.querySelectorAll("[data-store]"))
+        button.setAttribute(
+          "aria-pressed",
+          String(button.dataset.store === store),
+        );
+      const totals = document.getElementById("totals");
+      totals.replaceChildren();
+      for (const variant of ["A", "B"]) {
+        const row = document.createElement("p");
+        const amounts = report.totals
+          .filter((item) => item.variant === variant)
+          .map((item) =>
+            new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: item.currency,
+            }).format(item.amountMicros / 1e6),
+          );
+        const unknown = report.events.filter(
+          (item) =>
+            item.variant === variant && item.treatment === "amount unknown",
+        ).length;
+        row.textContent = `Variant ${variant} · ${amounts.length ? amounts.join(" + ") : "No known amount"}${unknown ? ` · ${unknown} unknown` : ""}`;
+        totals.append(row);
+      }
+      const tbody = document.getElementById("events");
+      tbody.replaceChildren();
+      for (const event of report.events) {
+        const row = document.createElement("tr");
+        for (const value of [
+          event.eventType,
+          event.store,
+          event.experiment
+            ? `${event.experiment} / ${event.variant}`
+            : "Unassigned",
+          event.transactionId ?? "Unknown",
+          event.amount
+            ? new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: event.amount.currency,
+              }).format(event.amount.amountMicros / 1e6)
+            : event.treatment,
+        ]) {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.append(cell);
+        }
+        tbody.append(row);
+      }
+      if (!report.events.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 5;
+        cell.textContent =
+          "No events received. Buy Premium, then deliver the events.";
+        row.append(cell);
+        tbody.append(row);
+      }
+    }
+    for (const button of document.querySelectorAll("[data-store]"))
+      button.onclick = async () => {
+        store = button.dataset.store;
+        await refresh();
+      };
+    for (const button of document.querySelectorAll("[data-action]"))
+      button.onclick = async () => {
+        const buttons = [...document.querySelectorAll("button")];
+        buttons.forEach((item) => (item.disabled = true));
+        try {
+          const response = await fetch("/paywall/" + button.dataset.action, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              store,
+              outcome: document.getElementById("outcome").value,
+            }),
+          });
+          const result = await response.json();
+          text("trace", JSON.stringify(result, null, 2));
+          if (!response.ok)
+            throw Error(
+              "Action failed. Buy Premium before changing its subscription. Inspect the HTTP result below.",
+            );
+          text(
+            "notice",
+            button.dataset.action === "buy"
+              ? `Purchase result: ${result.result}. Finish callbacks: ${result.finishCalls}. Deliver events to update analytics.`
+              : button.dataset.action.includes("deliver")
+                ? "Delivery completed. Repeated event IDs keep one saved copy."
+                : "Subscription changed. Deliver events to update analytics.",
+          );
+          await refresh();
+        } catch (error) {
+          text("notice", error.message);
+        } finally {
+          buttons.forEach((item) => (item.disabled = false));
+        }
+      };
+    await refresh();
+  </script>
+</html>

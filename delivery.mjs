@@ -47,6 +47,7 @@ export function startReceiver({
   path = ":memory:",
   clock = Date.now,
   port = 0,
+  onErase = () => {},
 } = {}) {
   const db = new Database(path, { create: true });
   db.exec(
@@ -64,6 +65,12 @@ export function startReceiver({
     .get().value;
   const marker = (userId) =>
     createHmac("sha256", key).update(userId).digest("hex");
+  const erased = (userId) =>
+    Boolean(
+      db
+        .query("SELECT marker FROM erased_users WHERE marker=?")
+        .get(marker(userId)),
+    );
   function erase(userId) {
     return db
       .transaction(() => {
@@ -71,6 +78,7 @@ export function startReceiver({
           marker(userId),
         );
         db.query("DELETE FROM inbox WHERE user_id=?").run(userId);
+        onErase(db, userId);
         return { accepted: true };
       })
       .immediate();
@@ -126,13 +134,7 @@ export function startReceiver({
       }
       try {
         db.transaction(() => {
-          if (
-            event.userId &&
-            db
-              .query("SELECT marker FROM erased_users WHERE marker=?")
-              .get(marker(event.userId))
-          )
-            return;
+          if (event.userId && erased(event.userId)) return;
           db.query("INSERT OR IGNORE INTO inbox VALUES (?,?,?,?)").run(
             event.projectId,
             event.eventId,
@@ -154,6 +156,7 @@ export function startReceiver({
     db,
     state,
     erase,
+    erased,
     url: server.url.origin + "/webhooks/commerce",
     async close() {
       await server.stop(true);

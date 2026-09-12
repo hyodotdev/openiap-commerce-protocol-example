@@ -1,4 +1,6 @@
 import { startReceiver, createDelivery } from "./delivery.mjs";
+import { openAttribution, eraseAttribution } from "./attribution.mjs";
+import { handlePaywall } from "./paywall.mjs";
 import { mkdirSync } from "node:fs";
 import { openBackend, END } from "./backend.mjs";
 import {
@@ -20,7 +22,12 @@ export function startServer({
   clock = Date.now,
 } = {}) {
   const backend = openBackend(path);
-  const receiver = startReceiver({ path: receiverPath, clock });
+  const receiver = startReceiver({
+    path: receiverPath,
+    clock,
+    onErase: eraseAttribution,
+  });
+  const attribution = openAttribution(receiver.db);
   const delivery = createDelivery(backend, receiver.url, { clock });
   const server = Bun.serve({
     hostname: "127.0.0.1",
@@ -29,6 +36,14 @@ export function startServer({
     async fetch(request) {
       try {
         const url = new URL(request.url);
+        if (url.pathname.startsWith("/paywall"))
+          return await handlePaywall(request, {
+            backend,
+            receiver,
+            delivery,
+            attribution,
+            serverCredential: CREDENTIALS.server,
+          });
         if (url.pathname === "/" && request.method === "GET")
           return new Response(
             Bun.file(new URL("./dashboard.html", import.meta.url)),
@@ -135,6 +150,7 @@ export function startServer({
         if (
           [
             "/fixture/cancel",
+            "/fixture/renew",
             "/fixture/clock",
             "/fixture/expire",
             "/fixture/erase-receiver",
@@ -158,6 +174,8 @@ export function startServer({
             return failure("INVALID_REQUEST");
           if (url.pathname === "/fixture/erase-receiver")
             return Response.json(receiver.erase(input.userId));
+          if (url.pathname === "/fixture/renew")
+            return Response.json(backend.renew(input.userId));
           return Response.json(
             url.pathname === "/fixture/expire"
               ? backend.expire(input.userId)
@@ -214,6 +232,7 @@ export function startServer({
     backend,
     receiver,
     delivery,
+    attribution,
     url: server.url.origin,
     async close() {
       await server.stop(true);
@@ -223,10 +242,11 @@ export function startServer({
   };
 }
 if (import.meta.main) {
-  mkdirSync(".runtime", { recursive: true });
+  const directory = process.env.DATA_DIR ?? ".runtime";
+  mkdirSync(directory, { recursive: true });
   const app = startServer({
-    path: ".runtime/provider.sqlite",
-    receiverPath: ".runtime/receiver.sqlite",
+    path: `${directory}/provider.sqlite`,
+    receiverPath: `${directory}/receiver.sqlite`,
     port: Number(process.env.PORT ?? 5196),
   });
   console.log(`Commerce Protocol from scratch: ${app.url}`);

@@ -1,0 +1,105 @@
+{
+  "stores": [
+    {
+      "id": "apple",
+      "label": "Apple fixture",
+      "variant": "A",
+      "access": true
+    },
+    {
+      "id": "google",
+      "label": "Google fixture",
+      "variant": "B",
+      "access": true
+    }
+  ],
+  "report": {
+    "events": [
+      {
+        "eventId": "8836cb2e-dd82-482a-827e-e1d775109ff6",
+        "eventType": "subscription.started",
+        "store": "apple",
+        "customer": "alice-apple",
+        "transactionId": "apple-demo-chain-0",
+        "experiment": "onboarding",
+        "variant": "A",
+        "amount": {
+          "currency": "USD",
+          "amountMicros": 4990000,
+          "provenance": "store"
+        },
+        "treatment": "known purchase amount"
+      },
+      {
+        "eventId": "ac84cb44-da09-48c9-92c4-ff4d002bf3f1",
+        "eventType": "entitlement.granted",
+        "store": "apple",
+        "customer": "alice-apple",
+        "transactionId": "apple-demo-chain-0",
+        "experiment": "onboarding",
+        "variant": "A",
+        "amount": null,
+        "treatment": "lifecycle only"
+      },
+      {
+        "eventId": "877621d3-c76d-439c-aeca-dabced518679",
+        "eventType": "subscription.renewed",
+        "store": "apple",
+        "customer": "alice-apple",
+        "transactionId": "apple-demo-chain-1",
+        "experiment": "onboarding",
+        "variant": "A",
+        "amount": {
+          "currency": "USD",
+          "amountMicros": 4990000,
+          "provenance": "store"
+        },
+        "treatment": "known purchase amount"
+      },
+      {
+        "eventId": "6ead0f4e-a6f5-4069-a4d3-a9a5b9c183f6",
+        "eventType": "subscription.canceled",
+        "store": "apple",
+        "customer": "alice-apple",
+        "transactionId": "apple-demo-chain-1",
+        "experiment": "onboarding",
+        "variant": "A",
+        "amount": null,
+        "treatment": "lifecycle only"
+      },
+      {
+        "eventId": "339aa16e-ad90-4cad-bad3-3cae049ea899",
+        "eventType": "subscription.started",
+        "store": "google",
+        "customer": "alice-google",
+        "transactionId": "google-demo-chain-0",
+        "experiment": "onboarding",
+        "variant": "B",
+        "amount": null,
+        "treatment": "amount unknown"
+      },
+      {
+        "eventId": "3023ade8-e6c3-4b8f-96b3-442551ea0bc7",
+        "eventType": "entitlement.granted",
+        "store": "google",
+        "customer": "alice-google",
+        "transactionId": "google-demo-chain-0",
+        "experiment": "onboarding",
+        "variant": "B",
+        "amount": null,
+        "treatment": "lifecycle only"
+      }
+    ],
+    "totals": [
+      {
+        "currency": "USD",
+        "experiment": "onboarding",
+        "variant": "A",
+        "amountMicros": 9980000
+      }
+    ],
+    "unknownAmounts": 1,
+    "reconciliation": 0
+  },
+  "receiver": "http://127.0.0.1:56432/webhooks/commerce"
+}

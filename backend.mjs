@@ -2,6 +2,7 @@ import { randomUUID, createHmac } from "node:crypto";
 import { valid } from "./contract.mjs";
 import { ProtocolFault } from "./contract.mjs";
 import { Database } from "bun:sqlite";
+import { PAYWALL_STORES } from "./paywall-fixtures.mjs";
 
 export const STAGE = 7;
 export const START = Date.UTC(2026, 8, 13);
@@ -18,6 +19,7 @@ export function openBackend(path) {
     CREATE TABLE IF NOT EXISTS erased_users (marker TEXT PRIMARY KEY);
     CREATE TABLE IF NOT EXISTS retired_purchases (evidence TEXT PRIMARY KEY);
     CREATE TABLE IF NOT EXISTS notified_gates (evidence TEXT PRIMARY KEY, active INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS billing_periods (evidence TEXT PRIMARY KEY, period INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS observations (id TEXT PRIMARY KEY, evidence TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS outbox (id TEXT PRIMARY KEY, user_id TEXT, body TEXT NOT NULL, delivery_id TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', attempts INTEGER NOT NULL DEFAULT 0, next_attempt INTEGER NOT NULL DEFAULT 0);
     CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value INTEGER NOT NULL);
@@ -71,6 +73,11 @@ export function openBackend(path) {
     return rows.map(snapshot);
   }
   function emit(eventType, row, occurredAt) {
+    const sample = PAYWALL_STORES.find((item) => item.key === row.evidence);
+    const period =
+      db
+        .query("SELECT period FROM billing_periods WHERE evidence=?")
+        .get(row.evidence)?.period ?? 0;
     const event = {
       eventId: randomUUID(),
       eventType,
@@ -83,6 +90,15 @@ export function openBackend(path) {
       ...(row.user_id ? { userId: row.user_id } : {}),
       productId: PRODUCT,
       subscription: snapshot(row),
+      ...(sample
+        ? {
+            originalTransactionId: sample.chain,
+            transactionId: `${sample.chain}-${period}`,
+            ...(!eventType.startsWith("entitlement.") && sample.price
+              ? { price: sample.price }
+              : {}),
+          }
+        : {}),
     };
     if (!valid("#/$defs/CommerceEvent", event))
       throw new ProtocolFault("INTERNAL_ERROR");
@@ -97,19 +113,24 @@ export function openBackend(path) {
     return event;
   }
   function evidence(input) {
-    if (!["fixture", "google"].includes(input.store))
+    if (!["fixture", "google", "apple"].includes(input.store))
       throw new ProtocolFault("UNSUPPORTED_STORE");
     const token =
       input.store === "google"
         ? input.google?.purchaseToken
-        : input.fixture?.receipt;
+        : input.store === "apple"
+          ? input.apple?.jws
+          : input.fixture?.receipt;
     if (
       typeof token !== "string" ||
       !token ||
       token.length > (input.store === "google" ? 4096 : 256)
     )
       throw new ProtocolFault("INVALID_REQUEST");
-    return { token, key: input.store === "google" ? `google:${token}` : token };
+    return {
+      token,
+      key: input.store === "fixture" ? token : `${input.store}:${token}`,
+    };
   }
   const api = {
     db,
@@ -187,12 +208,26 @@ export function openBackend(path) {
         },
         eventTypes: [
           "entitlement.granted",
+          "subscription.started",
+          "subscription.renewed",
           "subscription.canceled",
           "subscription.expired",
           "entitlement.revoked",
         ],
         stores: {
           fixture,
+          apple: Object.fromEntries(
+            axes.map((key) => [
+              key,
+              {
+                provider: key === "initialValidation" || key === "entitlements",
+                implementation:
+                  key === "initialValidation" || key === "entitlements",
+                notes:
+                  "Only the allowlisted paywall demo receipt; no Apple verification or notification ingestion.",
+              },
+            ]),
+          ),
           google: Object.fromEntries(
             axes.map((key) => [
               key,
@@ -208,7 +243,8 @@ export function openBackend(path) {
       };
     },
     bind(input) {
-      if (!["fixture", "google"].includes(input.store)) return { bound: false };
+      if (!["fixture", "google", "apple"].includes(input.store))
+        return { bound: false };
       const { key: receipt } = evidence(input);
       return db
         .transaction(() => {
@@ -228,6 +264,16 @@ export function openBackend(path) {
             input.userId,
             receipt,
           );
+          if (
+            !row.user_id &&
+            snapshot(row).active &&
+            PAYWALL_STORES.some((item) => item.key === row.evidence)
+          )
+            emit(
+              "subscription.started",
+              { ...row, user_id: input.userId },
+              START,
+            );
           if (!row.user_id && snapshot(row).active)
             emit(
               "entitlement.granted",
@@ -235,6 +281,35 @@ export function openBackend(path) {
               START,
             );
           return { bound: true };
+        })
+        .immediate();
+    },
+    renew(userId) {
+      return db
+        .transaction(() => {
+          const row = db
+            .query("SELECT * FROM purchases WHERE user_id=? LIMIT 1")
+            .get(userId);
+          if (!row || !PAYWALL_STORES.some((item) => item.key === row.evidence))
+            throw new ProtocolFault("NOT_FOUND");
+          if (!row.will_renew || row.state !== "Active")
+            throw new ProtocolFault("CONFLICT");
+          if (
+            db
+              .query("SELECT period FROM billing_periods WHERE evidence=?")
+              .get(row.evidence)
+          )
+            return { changed: false };
+          db.query("INSERT INTO billing_periods VALUES (?,1)").run(
+            row.evidence,
+          );
+          const renewed = { ...row, expires_at: END + 30 * 86400000 };
+          db.query("UPDATE purchases SET expires_at=? WHERE evidence=?").run(
+            renewed.expires_at,
+            row.evidence,
+          );
+          emit("subscription.renewed", renewed, now());
+          return { changed: true };
         })
         .immediate();
     },
@@ -328,11 +403,14 @@ export function openBackend(path) {
       const { token, key } = evidence(input);
       if (["outage", "fixture-google-outage"].includes(token))
         throw new ProtocolFault("VERIFICATION_FAILED");
-      const isValid = (
-        input.store === "google"
+      const isValid =
+        PAYWALL_STORES.some((item) => item.key === key) ||
+        (input.store === "google"
           ? ["fixture-google-alice", "fixture-google-bob"]
-          : ["alice-monthly", "bob-monthly"]
-      ).includes(token);
+          : input.store === "fixture"
+            ? ["alice-monthly", "bob-monthly"]
+            : []
+        ).includes(token);
       if (isValid)
         db.query(
           "INSERT OR IGNORE INTO purchases (evidence,user_id,state,expires_at,will_renew,store) VALUES (?,NULL,'Active',?,1,?)",

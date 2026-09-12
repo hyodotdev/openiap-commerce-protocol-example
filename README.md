@@ -5,6 +5,12 @@ The AI read the published contract, wrote the implementation, ran the tests,
 and corrected a conformance failure. Each milestone preserves its real output
 and screenshot. No previous example runtime was copied into this project.
 
+## Connect a paywall and experiment data
+
+The [paywall connection example](PAYWALL.md) extends this backend. Buy and renew
+a fictional subscription, then follow signed events into an experiment report.
+It uses two store fixtures, keeps unknown amounts unknown, and survives redelivery.
+
 ## Try the result
 
 Install Bun (tested with 1.3.13) and Node.js/npm, then run:
@@ -68,7 +74,7 @@ storage changes in each milestone.
 
 Store receipts, Alice/Bob sessions, the clock, and Google-shaped tokens are
 fixtures. This does not verify a real store purchase, native SDK checkout,
-Nami integration, revenue reporting, or deployment. Loopback delivery is a local
+external product integration, revenue reporting, or deployment. Loopback delivery is a local
 exception; the production events profile and GraphQL are not claimed.
 
 This is an iterative implementation by the same AI with prior conversation
