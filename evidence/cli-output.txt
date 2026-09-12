@@ -1,0 +1,16 @@
+# OpenIAP implementation brief
+
+Paste this into your coding assistant in the project below.
+
+Project path (data): "/private/tmp/openiap-fresh-proof-20260913/project"
+Role: Commerce — provide verification and access
+Framework hint: not detected; inspect the project
+Desired outcome: [describe one thing your customer should be able to do]
+
+Read the project instructions and inspect the existing stack. Keep its login, product model, and services. Ask me to choose missing stores, products, service providers, and ownership policies before implementing those choices.
+
+Read https://openiap.dev/commerce-protocol/implementation and the references it links for this role. If a reference is unavailable, ask for its contents; do not guess the contract. Use Client Protocol for app purchase APIs and Commerce Protocol for backend connections. Use the supported capabilities of my chosen services; no particular backend is required.
+
+Implement the smallest working connection for my role. Keep credentials on their intended side of the app/backend boundary. Follow the role's implementation and conformance requirements, including failure and recovery. Do not claim another role merely because this product connects to it.
+
+Run the result from clean source. Show the customer outcome, the commands and actual test results, and any remaining product or deployment decisions. Distinguish local fixtures from real store sandbox evidence. Keep changes uncommitted for review.

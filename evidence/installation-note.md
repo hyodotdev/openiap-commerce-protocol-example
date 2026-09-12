@@ -1,0 +1,1 @@
+The first install used the legacy unscoped name from the older local example brief. Reading the captured public build brief showed the scoped package. Corrected the dependency before writing runtime code; both actual install logs are retained. This was an assistant mistake, not a failure of the captured public guide.

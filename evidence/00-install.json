@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-09-12T18:09:34.849852+00:00",
+  "command": [
+    "npm",
+    "ci"
+  ],
+  "exitCode": 0,
+  "stdout": "\nadded 6 packages, and audited 7 packages in 511ms\n\n2 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n",
+  "stderr": "",
+  "sourceHashes": {
+    ".gitignore": "01eac943c846940d6a989697e4eb0bdb332a1c7d6f82843182401368954e03b6",
+    "README.md": "2a94ac47fed79ed208c67bedf81b48be0b28410d5f10d29b34be91552cdc3068",
+    "package-lock.json": "2f5fdd61052360cb681df584856ffff1ff6cf1465718ac334bbc1797c4eefb70",
+    "package.json": "b319a5ada8167804fe9bd72d0573c2e85ca12b4a241c4385f0e08c3760f90496"
+  }
+}

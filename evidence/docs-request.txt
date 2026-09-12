@@ -1,0 +1,14 @@
+Use the following as the Desired outcome for the brief above.
+Read https://openiap.dev/commerce-example/integration-brief.md and follow its linked guides and example code for my role.
+
+Build a local backend for monthly Premium subscriptions.
+Use this project's stack and fictional purchases for the first demo.
+Alice gets Premium after her verified purchase is connected to her.
+Canceling renewal keeps access until expiry. Bob cannot claim Alice's purchase.
+
+Implement this in my project. Use fictional data first.
+For verification, read http://127.0.0.1:4187/commerce-example/experience-verification.md.
+Download its linked example source into a separate temporary folder, then run npm ci and npm test there (Bun is required).
+Use the example's checks as a reference, then run equivalent checks against MY implementation for this role.
+Fix failures and rerun. Show the changed files, commands, actual results, and anything not tested.
+Show my running app or service. Passing the example alone does not verify my project.

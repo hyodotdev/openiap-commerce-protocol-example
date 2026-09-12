@@ -1,0 +1,14 @@
+{
+  "name": "openiap-commerce-protocol-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun server.mjs",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@hyodotdev/openiap-commerce-protocol": "0.1.0",
+    "ajv": "8.20.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "npx",
+    "--yes",
+    "@hyodotdev/openiap",
+    "init",
+    "--role",
+    "commerce"
+  ],
+  "exitCode": 0,
+  "stderr": "",
+  "entriesAfter": []
+}
