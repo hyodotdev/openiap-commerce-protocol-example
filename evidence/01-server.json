@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-09-12T18:11:26.621801+00:00",
+  "command": [
+    "npm",
+    "test"
+  ],
+  "exitCode": 0,
+  "stdout": "\n> openiap-commerce-protocol-example@0.0.0 test\n> bun test\n\nbun test v1.3.13 (bf2e2cec)\n",
+  "stderr": "\nbackend.test.mjs:\n(pass) HTTP server starts with an empty SQLite database and unfinished discovery [11.31ms]\n\n 1 pass\n 0 fail\n 6 expect() calls\nRan 1 test across 1 file. [152.00ms]\n",
+  "sourceHashes": {
+    ".gitignore": "01eac943c846940d6a989697e4eb0bdb332a1c7d6f82843182401368954e03b6",
+    "README.md": "2a94ac47fed79ed208c67bedf81b48be0b28410d5f10d29b34be91552cdc3068",
+    "backend.mjs": "b948980759347195ec0e2d423ada5f73d1f52321ce5f2c476ce7de7147b60c2d",
+    "backend.test.mjs": "e9b549880a9f7edfe7f9c4590d3002ed1eb79dcfdaa1939c24612df44d9733e5",
+    "contract.mjs": "180d09859a0f571e4c3dc44a2bb1fcdf35da4654bb78c48a133fa3d784c71706",
+    "dashboard.html": "d04e3d27181fcfdb90162b19b4cdf8a27db5b077f2fc948ba18dc4a7ce14eae7",
+    "package-lock.json": "2f5fdd61052360cb681df584856ffff1ff6cf1465718ac334bbc1797c4eefb70",
+    "package.json": "b319a5ada8167804fe9bd72d0573c2e85ca12b4a241c4385f0e08c3760f90496",
+    "server.mjs": "8676a805de7eb09ff485714416dc3dae4a8d41bfe332150083e75f745dcb7453"
+  }
+}
