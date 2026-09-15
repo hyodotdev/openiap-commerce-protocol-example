@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { rmSync } from "node:fs";
-import vectors from "openiap-commerce-protocol/vectors/signatures.json";
-import { SUBSCRIPTION_STATES, WEBHOOK } from "openiap-commerce-protocol";
+import vectors from "@hyodotdev/openiap-commerce-protocol/vectors/signatures.json";
+import { SUBSCRIPTION_STATES, WEBHOOK } from "@hyodotdev/openiap-commerce-protocol";
 import { FIXTURE, isEntitled } from "./provider.mjs";
 import { requestOperation } from "./scenario.mjs";
 import { runConsumerDemo } from "./consumer.mjs";

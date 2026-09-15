@@ -4,7 +4,7 @@ import {
   providerCapabilitiesSchema,
   COMMERCE_EVENT_VERSION,
   HTTP_BINDING,
-} from "openiap-commerce-protocol";
+} from "@hyodotdev/openiap-commerce-protocol";
 import { protocolError, validate } from "./contract.mjs";
 import { createErasureLedger } from "./erasure.mjs";
 
@@ -149,7 +149,7 @@ export function createProvider(path, now, fixture = FIXTURE) {
     "expiration",
   ]);
   const capabilities = {
-    specVersion: HTTP_BINDING.protocolVersion,
+    commerceProtocolVersion: HTTP_BINDING.protocolVersion,
     implementation: {
       name: "Commerce Protocol Example — fictional fixture store",
     },

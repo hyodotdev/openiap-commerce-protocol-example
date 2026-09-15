@@ -3,7 +3,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { WEBHOOK, HTTP_BINDING } from "openiap-commerce-protocol";
+import { WEBHOOK, HTTP_BINDING } from "@hyodotdev/openiap-commerce-protocol";
 import { createProvider, FIXTURE, CREDENTIALS } from "../provider.mjs";
 import { createReceiver, deliver, sign } from "../webhooks.mjs";
 import { createCommerceClient } from "./commerce-client.mjs";
@@ -143,7 +143,7 @@ export async function runComposition() {
       const descriptor = await provider.client.call("providerCapabilities");
       check(
         `${provider.id}: contract major matches`,
-        descriptor.specVersion.split(".")[0],
+        descriptor.commerceProtocolVersion.split(".")[0],
         HTTP_BINDING.protocolVersion.split(".")[0],
       );
       check(

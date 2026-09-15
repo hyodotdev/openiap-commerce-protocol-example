@@ -3,7 +3,7 @@ import { Database } from "bun:sqlite";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { WEBHOOK, COMMERCE_EVENT_VERSION } from "openiap-commerce-protocol";
+import { WEBHOOK, COMMERCE_EVENT_VERSION } from "@hyodotdev/openiap-commerce-protocol";
 import { createReceiver, sign } from "../webhooks.mjs";
 import { runComposition } from "./run.mjs";
 

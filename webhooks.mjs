@@ -1,6 +1,6 @@
 import { Database } from "bun:sqlite";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { WEBHOOK } from "openiap-commerce-protocol";
+import { WEBHOOK } from "@hyodotdev/openiap-commerce-protocol";
 import { validate } from "./contract.mjs";
 import { createErasureLedger } from "./erasure.mjs";
 

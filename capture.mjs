@@ -142,7 +142,7 @@ try {
     recordedAt: new Date().toISOString(),
     packageVersion: JSON.parse(
       readFileSync(
-        join(current, "node_modules/openiap-commerce-protocol/package.json"),
+        join(current, "node_modules/@hyodotdev/openiap-commerce-protocol/package.json"),
         "utf8",
       ),
     ).version,

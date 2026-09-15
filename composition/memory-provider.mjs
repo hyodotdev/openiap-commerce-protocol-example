@@ -4,7 +4,7 @@ import {
   HTTP_BINDING,
   WEBHOOK,
   providerCapabilitiesSchema,
-} from "openiap-commerce-protocol";
+} from "@hyodotdev/openiap-commerce-protocol";
 import { operation, protocolError, validate } from "../contract.mjs";
 
 // A second fixture implementation; it shares contract metadata, not SQLite logic.
@@ -19,7 +19,7 @@ export function createMemoryProvider({ fixture, credential, now }) {
     "expiration",
   ]);
   const capabilities = {
-    specVersion: HTTP_BINDING.protocolVersion,
+    commerceProtocolVersion: HTTP_BINDING.protocolVersion,
     implementation: {
       name: "Memory provider — separately implemented fixture",
     },

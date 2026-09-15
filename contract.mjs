@@ -1,5 +1,5 @@
 import Ajv from "ajv/dist/2020.js";
-import { bundleSchema, HTTP_BINDING } from "openiap-commerce-protocol";
+import { bundleSchema, HTTP_BINDING } from "@hyodotdev/openiap-commerce-protocol";
 
 const ajv = new Ajv({ strict: false, allErrors: true });
 ajv.addSchema(bundleSchema);

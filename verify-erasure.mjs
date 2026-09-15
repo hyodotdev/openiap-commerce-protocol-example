@@ -4,7 +4,7 @@ import { startLab } from "./server.mjs";
 import { FIXTURE } from "./provider.mjs";
 import { requestOperation, STAGES } from "./scenario.mjs";
 import { deliver, sign } from "./webhooks.mjs";
-import { WEBHOOK } from "openiap-commerce-protocol";
+import { WEBHOOK } from "@hyodotdev/openiap-commerce-protocol";
 
 export async function verifyErasure() {
   const checks = [];
