@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import { readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -14,6 +15,11 @@ const sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], {
   encoding: "utf8",
 }).trim();
 const url = `${milestones.repository}/blob/${sourceCommit}`;
+// Where this commit is published, which is not milestones.branch: that names
+// the lineage the work was built on, not the branch a reader can clone.
+const publishedBranch = execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+  encoding: "utf8",
+}).trim();
 const tested = JSON.parse(
   readFileSync("evidence/08-tested-final.json", "utf8"),
 );
@@ -40,7 +46,21 @@ const readme = readFileSync("README.md", "utf8").replace(
   (_, label, path) =>
     `${label}(${label.startsWith("!") ? `https://raw.githubusercontent.com/hyodotdev/openiap-commerce-protocol-example/${sourceCommit}` : url}/${path})`,
 );
-writeFileSync(join(root, "from-scratch.md"), readme);
+// The README tells a reader to clone the development branch, which has no
+// stable commit to pin. The published page must name the branch this evidence
+// is cut from and the exact commit it records, or a reader follows a moving
+// target — and the docs gate refuses a page that disagrees with the recording.
+const pinned = readme.replace(
+  /git clone --branch \S+ --single-branch (\S+)\ncd (\S+)\n/,
+  (line, remote, directory) =>
+    `git clone --branch ${publishedBranch} --single-branch ${remote}\n` +
+    `cd ${directory}\ngit checkout ${sourceCommit}\n`,
+);
+assert(
+  pinned.includes(`git checkout ${sourceCommit}`),
+  "README's clone block did not match; the published page would not pin a commit",
+);
+writeFileSync(join(root, "from-scratch.md"), pinned);
 copyFileSync("evidence/final-screen.jpg", join(root, "fresh-screen.jpg"));
 copyFileSync("evidence/final-mobile.jpg", join(root, "fresh-mobile.jpg"));
 const archive = execFileSync("git", ["archive", "--format=tar.gz", "HEAD"], {
