@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 
 const destination = process.argv[2];
 if (!destination)
@@ -42,12 +43,15 @@ const readme = readFileSync("README.md", "utf8").replace(
 writeFileSync(join(root, "from-scratch.md"), readme);
 copyFileSync("evidence/final-screen.jpg", join(root, "fresh-screen.jpg"));
 copyFileSync("evidence/final-mobile.jpg", join(root, "fresh-mobile.jpg"));
-writeFileSync(
-  join(root, "fresh-source.tar.gz"),
-  execFileSync("git", ["archive", "--format=tar.gz", "HEAD"], {
-    maxBuffer: 32 * 1024 * 1024,
-  }),
-);
+const archive = execFileSync("git", ["archive", "--format=tar.gz", "HEAD"], {
+  maxBuffer: 32 * 1024 * 1024,
+});
+writeFileSync(join(root, "fresh-source.tar.gz"), archive);
+// The consumer pins the archive by hash; derive it from the bytes just written
+// so the two can never be written apart.
+const build = JSON.parse(readFileSync(join(root, "fresh-build.json"), "utf8"));
+build.archiveSha256 = createHash("sha256").update(archive).digest("hex");
+writeFileSync(join(root, "fresh-build.json"), JSON.stringify(build, null, 2) + "\n");
 console.log(
   `Exported source ${sourceCommit} and ${milestones.milestones.length} real checkpoints.`,
 );
