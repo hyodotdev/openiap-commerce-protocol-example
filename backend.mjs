@@ -174,7 +174,7 @@ export function openBackend(path) {
         ]),
       );
       return {
-        specVersion: "1.0",
+        commerceProtocolVersion: "1.0",
         profiles: {
           verification: "1.0",
           entitlements: "1.0",
