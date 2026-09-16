@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "bun server.mjs",
-    "test": "bun verify.mjs",
+    "test": "bun verify.mjs && bun test composition/app-backend.test.mjs composition/receiver.test.mjs",
     "capture": "bun capture.mjs",
     "verify:checkpoints": "bun verify-checkpoints.mjs",
     "test:tooling": "bun test checkpoint-tools.test.mjs",
@@ -14,7 +14,7 @@
     "demo:bridge": "bun client-bridge.mjs"
   },
   "dependencies": {
-    "openiap-commerce-protocol": "0.1.0",
+    "@hyodotdev/openiap-commerce-protocol": "0.3.0",
     "ajv": "^8.17.1"
   },
   "devDependencies": {

@@ -91,7 +91,7 @@
       summary { cursor: pointer; padding: 8px 0; font-weight: 600; }
       ol {
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
         gap: 10px;
         padding: 0;
         margin: 0 0 24px;
@@ -227,7 +227,7 @@
           <span class="eyebrow" id="progress">Ready to run</span>
           <h1 id="title">From a purchase to current access.</h1>
           <p id="summary">
-            Run the six milestones against a new, empty database.
+            Follow a purchase from verification to account deletion in a new, empty database.
           </p>
           <div class="built" id="built"></div>
         </div>
@@ -302,7 +302,7 @@
         for (const row of rows) {
           const tr = body.insertRow();
           for (const [, key] of columns)
-            tr.insertCell().textContent = String(row[key] ?? "Unbound");
+            tr.insertCell().textContent = String(row[key] ?? (key === "userId" ? "No user identity" : "—"));
         }
         $(target).append(table);
       }

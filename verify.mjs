@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
 import { rmSync } from "node:fs";
-import vectors from "openiap-commerce-protocol/vectors/signatures.json";
-import { SUBSCRIPTION_STATES, WEBHOOK } from "openiap-commerce-protocol";
+import vectors from "@hyodotdev/openiap-commerce-protocol/vectors/signatures.json";
+import { SUBSCRIPTION_STATES, WEBHOOK } from "@hyodotdev/openiap-commerce-protocol";
 import { FIXTURE, isEntitled } from "./provider.mjs";
 import { requestOperation } from "./scenario.mjs";
 import { runConsumerDemo } from "./consumer.mjs";
 import { runBridgeDemo } from "./client-bridge.mjs";
 import { startLab } from "./server.mjs";
 import { authentic, createReceiver, deliver, sign } from "./webhooks.mjs";
+import { verifyStores } from "./verify-stores.mjs";
+import { verifyErasure } from "./verify-erasure.mjs";
 
 export async function verifyLab({ compareSigner } = {}) {
   const lab = startLab();
@@ -96,9 +98,10 @@ export async function verifyLab({ compareSigner } = {}) {
       "UNSUPPORTED_STORE",
     );
     check(
-      "Erasure is explicitly unimplemented",
-      (await call("eraseUser", { userId: FIXTURE.userId })).body.error.code,
-      "UNSUPPORTED_PROFILE",
+      "Erasure rejects verification credentials",
+      (await call("eraseUser", { userId: FIXTURE.userId }, "verification"))
+        .httpStatus,
+      403,
     );
     check(
       "Cancellation after expiry is ignored",
@@ -425,6 +428,8 @@ export async function verifyLab({ compareSigner } = {}) {
   }
   checks.push(...(await runConsumerDemo()).checks);
   checks.push(...runBridgeDemo());
+  checks.push(...(await verifyStores()));
+  checks.push(...(await verifyErasure()));
   return checks;
 }
 
